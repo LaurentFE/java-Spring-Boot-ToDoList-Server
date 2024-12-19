@@ -1,5 +1,7 @@
 package fr.laurentFE.todolistspringbootserver;
 
+import fr.laurentFE.todolistspringbootserver.model.ListItem;
+
 import java.util.ArrayList;
 
 public class ToDoList {

@@ -1,7 +1,14 @@
-package fr.laurentFE.todolistspringbootserver;
+package fr.laurentFE.todolistspringbootserver.model;
 
+import jakarta.validation.constraints.NotEmpty;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+@Table("users")
 public class User {
+    @Id
     private final Integer user_id;
+    @NotEmpty
     private String user_name;
 
     public User(Integer user_id, String user_name) {

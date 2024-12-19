@@ -1,8 +1,16 @@
-package fr.laurentFE.todolistspringbootserver;
+package fr.laurentFE.todolistspringbootserver.model;
 
+import jakarta.validation.constraints.NotEmpty;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+@Table("list_items")
 public class ListItem {
+    @Id
     private final Integer item_id;
+    @NotEmpty
     private String label;
+    @NotEmpty
     private Boolean checked;
 
     public ListItem(Integer item_id, String label, Boolean checked) {
