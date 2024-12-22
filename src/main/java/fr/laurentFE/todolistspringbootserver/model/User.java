@@ -6,14 +6,24 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Table("users")
 public class User {
+
     @Id
-    private final Integer user_id;
+    private Integer user_id;
     @NotEmpty
     private String user_name;
 
-    public User(Integer user_id, String user_name) {
-        this.user_id = user_id;
-        this.user_name = user_name;
+    public User() {
+        this.user_id = null;
+        this.user_name = null;
+    }
+    public User(String name) {
+        this.user_id = null;
+        this.user_name = name;
+    }
+
+    public User(Integer id, String name) {
+        this.user_id = id;
+        this.user_name = name;
     }
 
     public Integer getUser_id() {
@@ -24,7 +34,12 @@ public class User {
         return user_name;
     }
 
+    public void setUser_id(Integer user_id) {
+        this.user_id = user_id;
+    }
+
     public void setUser_name(String user_name) {
         this.user_name = user_name;
     }
+
 }
