@@ -40,12 +40,12 @@ public class ServerService {
     public User createUser(User user) {
         if (userNameExists(user.getUser_name())) {
             user.setUser_id(-409);
-            user.setUser_name("user_name already exists");
+            user.setUser_name("user_name");
             return user;
         }
         else if (user.getUser_id() != null) {
             user.setUser_id(-400);
-            user.setUser_name("user_id must not be provided");
+            user.setUser_name("user_id");
             return user;
         }
         else {
@@ -56,13 +56,13 @@ public class ServerService {
     public User updateUser(User user, Integer id) {
         if (user.getUser_id() != null) {
             user.setUser_id(-400);
-            user.setUser_name("user_id must not be provided in request body");
+            user.setUser_name("user_id");
             return user;
         }
         User previous_user = findUser(id);
         if (previous_user == null) {
             user.setUser_id(-404);
-            user.setUser_name("requested user_id not found");
+            user.setUser_name("user_id");
             return user;
         }
         else {
