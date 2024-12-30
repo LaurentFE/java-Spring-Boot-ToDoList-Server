@@ -5,6 +5,7 @@ import fr.laurentFE.todolistspringbootserver.model.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -45,12 +46,27 @@ public class CustomExceptionController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(Exception e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        String message = "Missing parameter in request body : " + e.getMessage();
-        return new ResponseEntity<>(new ErrorResponse(status, message), status);
+
+        /*
+         * Doesn't make use of validation tags messages (ex: @NotEmpty(message="Field should not be empty"))
+         * Crude, and should be improved upon to make use off proper DTO validation
+         */
+        MethodArgumentNotValidException ex = (MethodArgumentNotValidException)e;
+        StringBuilder message = new StringBuilder();
+        for (FieldError fe : ex.getBindingResult().getFieldErrors()){
+            message.append("Invalid value '")
+                    .append(fe.getRejectedValue())
+                    .append("' for field '")
+                    .append(fe.getField())
+                    .append("' : ")
+                    .append(fe.getDefaultMessage())
+                    .append(";");
+        }
+        return new ResponseEntity<>(new ErrorResponse(status, message.toString()), status);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> HttpMessageNotReadableException(Exception e) {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(Exception e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String message = "Required request body is missing";
         return new ResponseEntity<>(new ErrorResponse(status, message), status);

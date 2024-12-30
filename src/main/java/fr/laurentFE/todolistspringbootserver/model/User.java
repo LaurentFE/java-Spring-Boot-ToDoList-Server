@@ -11,7 +11,7 @@ public class User {
     @Id
     @Column("user_id")
     private Integer userId;
-    @NotEmpty
+    @NotEmpty(message="This field cannot be empty")
     @Column("user_name")
     private String userName;
 

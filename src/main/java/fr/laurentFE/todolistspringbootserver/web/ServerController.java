@@ -53,7 +53,7 @@ public class ServerController {
     }
 
     @PutMapping("/rest/Users/{id}")
-    public User updateUser(@RequestBody User user, @PathVariable Integer id) {
+    public User updateUser(@RequestBody @Valid User user, @PathVariable Integer id) {
         User updatedUser = serverService.updateUser(user, id);
         return switch (updatedUser.getUserId()) {
             case -400 -> throw new UnexpectedParameterException(updatedUser.getUserName());
