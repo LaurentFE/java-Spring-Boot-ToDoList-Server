@@ -30,19 +30,19 @@ public class ServerController {
     /*
      * User endpoints
      */
-    @GetMapping("/rest/Users")
+    @GetMapping("/rest/users")
     public Iterable<User> getUsers() {
         return serverService.findAllUsers();
     }
 
-    @GetMapping("/rest/Users/{id}")
+    @GetMapping("/rest/users/{id}")
     public User getUser(@PathVariable Integer id) {
         User user = serverService.findUser(id);
         if (user == null) throw new DataNotFoundException("user_id");
         return user;
     }
 
-    @PostMapping("/rest/Users")
+    @PostMapping("/rest/users")
     public User createUser(@RequestBody @Valid User user) {
         User newUser = serverService.createUser(user);
         return switch (newUser.getUserId()) {
@@ -52,7 +52,7 @@ public class ServerController {
         };
     }
 
-    @PutMapping("/rest/Users/{id}")
+    @PutMapping("/rest/users/{id}")
     public User updateUser(@RequestBody @Valid User user, @PathVariable Integer id) {
         User updatedUser = serverService.updateUser(user, id);
         return switch (updatedUser.getUserId()) {
@@ -65,7 +65,7 @@ public class ServerController {
     /*
      * ToDoList endpoints
      */
-    @GetMapping("/rest/ToDoLists")
+    @GetMapping("/rest/toDoLists")
     public Iterable<ToDoList> getToDoLists(@RequestBody @Valid User user) {
         Iterable<ToDoList> userToDoLists = serverService.findAllToDoLists(user);
         if (userToDoLists != null) {
