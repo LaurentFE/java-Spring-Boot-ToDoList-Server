@@ -1,7 +1,10 @@
 package fr.laurentFE.todolistspringbootserver.service;
 
 import fr.laurentFE.todolistspringbootserver.model.*;
+import fr.laurentFE.todolistspringbootserver.model.exceptions.DataDuplicateException;
+import fr.laurentFE.todolistspringbootserver.model.exceptions.DataNotFoundException;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.IncompleteDataSetException;
+import fr.laurentFE.todolistspringbootserver.model.exceptions.UnexpectedParameterException;
 import fr.laurentFE.todolistspringbootserver.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,23 +50,27 @@ public class ServerService {
     }
 
     public User findUser(Integer id) {
-        return usersRepository.findById(id).orElse(null);
+        User user = usersRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw new DataNotFoundException("userId");
+        }
+        return user;
     }
 
     public User findUser(String user_name) {
-        return usersRepository.findByUserName(user_name).orElse(null);
+        User user = usersRepository.findByUserName(user_name).orElse(null);
+        if (user == null) {
+            throw new DataNotFoundException("userId");
+        }
+        return user;
     }
 
     public User createUser(User user) {
         if (userNameExists(user.getUserName())) {
-            user.setUserId(-409);
-            user.setUserName("user_name");
-            return user;
+            throw new DataDuplicateException("userName");
         }
         else if (user.getUserId() != null) {
-            user.setUserId(-400);
-            user.setUserName("user_id");
-            return user;
+            throw new UnexpectedParameterException("userId");
         }
         else {
             return usersRepository.save(user);
@@ -72,24 +79,22 @@ public class ServerService {
 
     public User updateUser(User user, Integer id) {
         if (user.getUserId() != null) {
-            user.setUserId(-400);
-            user.setUserName("user_id");
-            return user;
+            throw new UnexpectedParameterException("userId");
         }
-        User previous_user = findUser(id);
-        if (previous_user == null) {
-            user.setUserId(-404);
-            user.setUserName("user_id");
-            return user;
-        }
-        else {
-            user.setUserId(id);
-            return usersRepository.save(user);
-        }
+        // Throws an exception if userId does not link to an existing user
+        findUser(id);
+        user.setUserId(id);
+        return usersRepository.save(user);
+
     }
 
     private ListName getToDoListName(Integer listId) {
-        return listNameRepository.findById(listId).orElse(null);
+        ListName ln = listNameRepository.findById(listId).orElse(null);
+        if (ln == null) {
+            logger.error("No record in table 'list_names' for list_id='{}'", listId);
+            throw new IncompleteDataSetException("user_id");
+        }
+        return ln;
     }
 
     private Item getItem(Integer itemId) {
@@ -106,10 +111,7 @@ public class ServerService {
             Item item = getItem(itemId);
             if (item == null) {
                 logger.error("No record in table 'items' for item_id='{}'", itemId);
-                item = new Item();
-                item.setItemId(-500);
-                items.add(item);
-                break;
+                throw new IncompleteDataSetException("userId");
             }
             items.add(item);
         }
@@ -119,42 +121,25 @@ public class ServerService {
     private ToDoList getFilledToDoList(Integer listId) {
         ToDoList res = new ToDoList();
         res.setListId(listId);
+        // label can't be null as if no label is found, an exception is thrown
         String label = getToDoListName(listId).getLabel();
-        if (label == null) {
-            logger.error("No record in table 'list_names' for list_id='{}'", listId);
-            res.setListId(-500);
-        }
         res.setLabel(label);
         ArrayList<Item> items = getAllItems(listId);
-        if (!items.isEmpty() && items.getFirst().getItemId() == -500) {
-            // Error is already logged in getAllItems()
-            res.setListId(-500);
-        }
         res.setItems(items);
         return res;
     }
 
     public Iterable<ToDoList> findAllToDoLists(User user) {
+        // dbUser cannot be null, as if no user is found from the given userName, an exception is thrown
         User dbUser = findUser(user.getUserName());
         ArrayList<ToDoList> tdl = new ArrayList<>();
-        if (dbUser != null) {
-            Iterable<UserList> userList = listRepository.findAllByUserId(dbUser.getUserId()).orElse(null);
-            if (userList != null) {
-                for (UserList ul : userList) {
-                    ToDoList tmp = getFilledToDoList(ul.getListId());
-                    if (tmp.getListId() == -500) {
-                        // Errors are already logged in getFilledToDoList() and its calls
-                        throw new IncompleteDataSetException("user_id");
-                    }
-                    tdl.add(tmp);
-                }
+        Iterable<UserList> userList = listRepository.findAllByUserId(dbUser.getUserId()).orElse(null);
+        if (userList != null) {
+            for (UserList ul : userList) {
+                ToDoList tmp = getFilledToDoList(ul.getListId());
+                tdl.add(tmp);
             }
-            return tdl;
-        } else {
-            ToDoList tmp = new ToDoList(-404, "user_id");
-            ArrayList<ToDoList> err = new ArrayList<>();
-            err.add(tmp);
-            return err;
         }
+        return tdl;
     }
 }
