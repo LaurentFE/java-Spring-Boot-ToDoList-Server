@@ -2,44 +2,47 @@ package fr.laurentFE.todolistspringbootserver.model;
 
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table("users")
 public class User {
 
     @Id
-    private Integer user_id;
-    @NotEmpty
-    private String user_name;
+    @Column("user_id")
+    private Integer userId;
+    @NotEmpty(message="This field cannot be empty")
+    @Column("user_name")
+    private String userName;
 
     public User() {
-        this.user_id = null;
-        this.user_name = null;
+        this.userId = null;
+        this.userName = null;
     }
     public User(String name) {
-        this.user_id = null;
-        this.user_name = name;
+        this.userId = null;
+        this.userName = name;
     }
 
     public User(Integer id, String name) {
-        this.user_id = id;
-        this.user_name = name;
+        this.userId = id;
+        this.userName = name;
     }
 
-    public Integer getUser_id() {
-        return user_id;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUser_id(Integer user_id) {
-        this.user_id = user_id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
 }
