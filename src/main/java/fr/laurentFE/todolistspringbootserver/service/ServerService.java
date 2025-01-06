@@ -186,4 +186,23 @@ public class ServerService {
             return getFilledToDoList(toDoList.getListId());
         }
     }
+
+    public ToDoList updateToDoList(ToDoList toDoList, Integer listId) {
+        if (!userListRepository.existsById(listId)) {
+            throw new DataNotFoundException("listId");
+        }
+        if (toDoList.getListId() != null) {
+            throw new UnexpectedParameterException("listId");
+        }
+        if (!toDoList.getItems().isEmpty()) {
+            throw new UnexpectedParameterException("items");
+        }
+        findUser(toDoList.getUserId());
+
+        toDoList.setListId(listId);
+        userListRepository.save(new UserList(toDoList.getListId(), toDoList.getUserId()));
+        listNameRepository.save(new ListName(toDoList.getListId(), toDoList.getLabel()));
+
+        return getFilledToDoList(listId);
+    }
 }

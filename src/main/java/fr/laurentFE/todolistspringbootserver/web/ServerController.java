@@ -55,4 +55,9 @@ public class ServerController {
     public ToDoList createToDoList(@RequestBody @Valid ToDoList toDoList) {
         return serverService.createToDoList(toDoList);
     }
+
+    @PutMapping("/rest/toDoLists/{id}")
+    public ToDoList updateToDoList(@RequestBody @Valid ToDoList toDoList, @PathVariable Integer id) {
+        return serverService.updateToDoList(toDoList, id);
+    }
 }
