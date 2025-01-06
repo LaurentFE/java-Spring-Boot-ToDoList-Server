@@ -17,6 +17,11 @@ public class UserList {
         userId = null;
     }
 
+    public UserList( Integer listId, Integer userId) {
+        this.listId = listId;
+        this.userId = userId;
+    }
+
     public Integer getListId() {
         return listId;
     }

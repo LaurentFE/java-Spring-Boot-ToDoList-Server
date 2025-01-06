@@ -1,33 +1,30 @@
 package fr.laurentFE.todolistspringbootserver.model;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.ArrayList;
 
-@Table("lists")
 public class ToDoList {
     @Id
-    @Column("list_id")
     private Integer listId;
+    @NotNull(message="This field cannot be empty")
+    private Integer userId;
+    @NotEmpty(message="This field cannot be empty")
     private String label;
     private ArrayList<Item> items;
 
     public ToDoList() {
         this.listId = null;
+        this.userId = null;
         this.label = null;
-        this.items = null;
+        this.items = new ArrayList<>();
     }
 
-    public ToDoList(Integer listId, String label) {
+    public ToDoList(Integer listId, Integer userId, String label, ArrayList<Item> items) {
         this.listId = listId;
-        this.label = label;
-        this.items = null;
-    }
-
-    public ToDoList(Integer listId, String label, ArrayList<Item> items) {
-        this.listId = listId;
+        this.userId = userId;
         this.label = label;
         this.items = items;
     }
@@ -38,6 +35,14 @@ public class ToDoList {
 
     public void setListId(Integer listId) {
         this.listId = listId;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getLabel() {

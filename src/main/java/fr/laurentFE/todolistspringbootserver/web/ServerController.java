@@ -50,4 +50,9 @@ public class ServerController {
     public Iterable<ToDoList> getToDoLists(@RequestBody @Valid User user) {
         return serverService.findAllToDoLists(user);
     }
+
+    @PostMapping("/rest/toDoLists")
+    public ToDoList createToDoList(@RequestBody @Valid ToDoList toDoList) {
+        return serverService.createToDoList(toDoList);
+    }
 }
