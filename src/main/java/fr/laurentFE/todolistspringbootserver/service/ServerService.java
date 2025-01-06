@@ -150,6 +150,14 @@ public class ServerService {
         return tdl;
     }
 
+    private void insertItemIntoList(Integer listId, Integer itemId) {
+        jdbcTemplate.update(
+                "INSERT INTO list_items (list_id, item_id) VALUES (:list_id, :item_id)",
+                new MapSqlParameterSource()
+                        .addValue("list_id", listId)
+                        .addValue("item_id", itemId));
+    }
+
     public ToDoList createToDoList(ToDoList toDoList) {
         if (toDoList.getListId() != null) {
             throw new UnexpectedParameterException("listId");
@@ -163,24 +171,26 @@ public class ServerService {
                 }
             }
             findUser(toDoList.getUserId());
-            UserList ul = userListRepository.save(new UserList(toDoList.getListId(), toDoList.getUserId()));
+            UserList ul = userListRepository.save(new UserList(null, toDoList.getUserId()));
             toDoList.setListId(ul.getListId());
-            jdbcTemplate.update(
-                    "INSERT INTO list_names (list_id, label) VALUES (:list_id, :label)",
-                    new MapSqlParameterSource()
-                            .addValue("list_id", toDoList.getListId())
-                            .addValue("label", toDoList.getLabel()));
+            ListName ln = listNameRepository.save(new ListName(null, toDoList.getLabel()));
+            if (!ln.getListId().equals(toDoList.getListId())) {
+                logger.error("Out of sync creation of list_name list_id='{}' for list list_id='{}'",
+                        ln.getListId(),
+                        toDoList.getListId());
+                logger.info("Deleting list_names entry for list_id='{}' following an out of sync ID error", ln.getListId());
+                listNameRepository.delete(ln);
+                logger.info("Deleting lists entry for list_id='{}' following an out of sync ID error", ul.getListId());
+                userListRepository.delete(ul);
+                throw new OutOfSyncListIdsException("");
+            }
             if (!toDoList.getItems().isEmpty()) {
                 for (Item item : toDoList.getItems()) {
                     if (item.getLabel() == null) {
                         throw new MissingParameterException("items[label]");
                     }
                     Item insertedItem = itemRepository.save(item);
-                    jdbcTemplate.update(
-                            "INSERT INTO list_items (list_id, item_id) VALUES (:list_id, :item_id)",
-                            new MapSqlParameterSource()
-                                    .addValue("list_id", toDoList.getListId())
-                                    .addValue("item_id", insertedItem.getItemId()));
+                    insertItemIntoList(toDoList.getListId(), insertedItem.getItemId());
                 }
             }
             return getFilledToDoList(toDoList.getListId());
