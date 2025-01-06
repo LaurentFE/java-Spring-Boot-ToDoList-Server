@@ -26,6 +26,8 @@ The webserver will run on the machine, and you will be able to send requests to 
 
 The resources handled by the API will be described on the landing page of the server (Not implemented yet)
 
+Upon start of the application, the database is currently always reset to default values.
+
 ## What
 
 This is a Java Spring Boot server that connects to a MySQL Database to store todo lists for users, and expose API 
@@ -39,6 +41,7 @@ Currently available endpoints allow :
 - Restitution of all of a user's todo lists
 - Creation of user 
 - Creation of a list for a user, with or without items
+- Update off a list name
 
 ## How
 
