@@ -1,10 +1,7 @@
 package fr.laurentFE.todolistspringbootserver.service;
 
 import fr.laurentFE.todolistspringbootserver.model.*;
-import fr.laurentFE.todolistspringbootserver.model.exceptions.DataDuplicateException;
-import fr.laurentFE.todolistspringbootserver.model.exceptions.DataNotFoundException;
-import fr.laurentFE.todolistspringbootserver.model.exceptions.IncompleteDataSetException;
-import fr.laurentFE.todolistspringbootserver.model.exceptions.UnexpectedParameterException;
+import fr.laurentFE.todolistspringbootserver.model.exceptions.*;
 import fr.laurentFE.todolistspringbootserver.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +27,7 @@ public class ServerService {
     @Autowired
     private ListNameRepository listNameRepository;
     @Autowired
-    private ListRepository listRepository;
-    @Autowired
-    private ToDoListRepository toDoListRepository;
+    private UserListRepository userListRepository;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -118,9 +113,21 @@ public class ServerService {
         return items;
     }
 
+    private Integer getListUserId(Integer listId) {
+        UserList ul = userListRepository.findById(listId).orElse(null);
+        if (ul == null) {
+            logger.error("No record in table 'lists' for list_id='{}'", listId);
+            throw new IncompleteDataSetException("list_id");
+        }
+        return ul.getUserId();
+    }
+
     private ToDoList getFilledToDoList(Integer listId) {
         ToDoList res = new ToDoList();
         res.setListId(listId);
+        // userId can't be null as if no userId is found, an exception is thrown
+        Integer userId = getListUserId(listId);
+        res.setUserId(userId);
         // label can't be null as if no label is found, an exception is thrown
         String label = getToDoListName(listId).getLabel();
         res.setLabel(label);
@@ -133,7 +140,7 @@ public class ServerService {
         // dbUser cannot be null, as if no user is found from the given userName, an exception is thrown
         User dbUser = findUser(user.getUserName());
         ArrayList<ToDoList> tdl = new ArrayList<>();
-        Iterable<UserList> userList = listRepository.findAllByUserId(dbUser.getUserId()).orElse(null);
+        Iterable<UserList> userList = userListRepository.findAllByUserId(dbUser.getUserId()).orElse(null);
         if (userList != null) {
             for (UserList ul : userList) {
                 ToDoList tmp = getFilledToDoList(ul.getListId());
@@ -141,5 +148,42 @@ public class ServerService {
             }
         }
         return tdl;
+    }
+
+    public ToDoList createToDoList(ToDoList toDoList) {
+        if (toDoList.getListId() != null) {
+            throw new UnexpectedParameterException("listId");
+        }
+        else {
+            if(!toDoList.getItems().isEmpty()) {
+                for (Item item : toDoList.getItems()) {
+                    if (item.getItemId() != null) {
+                        throw new UnexpectedParameterException("itemId");
+                    }
+                }
+            }
+            findUser(toDoList.getUserId());
+            UserList ul = userListRepository.save(new UserList(toDoList.getListId(), toDoList.getUserId()));
+            toDoList.setListId(ul.getListId());
+            jdbcTemplate.update(
+                    "INSERT INTO list_names (list_id, label) VALUES (:list_id, :label)",
+                    new MapSqlParameterSource()
+                            .addValue("list_id", toDoList.getListId())
+                            .addValue("label", toDoList.getLabel()));
+            if (!toDoList.getItems().isEmpty()) {
+                for (Item item : toDoList.getItems()) {
+                    if (item.getLabel() == null) {
+                        throw new MissingParameterException("items[label]");
+                    }
+                    Item insertedItem = itemRepository.save(item);
+                    jdbcTemplate.update(
+                            "INSERT INTO list_items (list_id, item_id) VALUES (:list_id, :item_id)",
+                            new MapSqlParameterSource()
+                                    .addValue("list_id", toDoList.getListId())
+                                    .addValue("item_id", insertedItem.getItemId()));
+                }
+            }
+            return getFilledToDoList(toDoList.getListId());
+        }
     }
 }

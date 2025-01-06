@@ -43,14 +43,17 @@ public class CustomExceptionController {
         return new ResponseEntity<>(new ErrorResponse(status, message), status);
     }
 
+    @ExceptionHandler(MissingParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingParameterException(Exception e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String message = "Missing parameter in request body : " + e.getMessage();
+        return new ResponseEntity<>(new ErrorResponse(status, message), status);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(Exception e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        /*
-         * Doesn't make use of validation tags messages (ex: @NotEmpty(message="Field should not be empty"))
-         * Crude, and should be improved upon to make use off proper DTO validation
-         */
         MethodArgumentNotValidException ex = (MethodArgumentNotValidException)e;
         StringBuilder message = new StringBuilder();
         for (FieldError fe : ex.getBindingResult().getFieldErrors()){
