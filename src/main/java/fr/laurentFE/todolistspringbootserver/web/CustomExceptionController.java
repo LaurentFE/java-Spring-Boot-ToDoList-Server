@@ -68,6 +68,13 @@ public class CustomExceptionController {
         return new ResponseEntity<>(new ErrorResponse(status, message.toString()), status);
     }
 
+    @ExceptionHandler(OutOfSyncListIdsException.class)
+    public ResponseEntity<ErrorResponse> handleOutOfSyncListIdsException(Exception e) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        String message = "Internal server error";
+        return new ResponseEntity<>(new ErrorResponse(status, message), status);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(Exception e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;

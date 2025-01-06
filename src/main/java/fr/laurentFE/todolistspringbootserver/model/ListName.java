@@ -17,6 +17,11 @@ public class ListName {
         label = null;
     }
 
+    public ListName(Integer listId, String label) {
+        this.listId = listId;
+        this.label = label;
+    }
+
     public Integer getListId() {
         return listId;
     }
