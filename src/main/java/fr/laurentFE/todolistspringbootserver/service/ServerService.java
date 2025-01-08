@@ -61,10 +61,7 @@ public class ServerService {
     }
 
     public User createUser(User user) {
-        if (user.getUserId() != null) {
-            throw new UnexpectedParameterException("userId");
-        }
-        else if (userNameExists(user.getUserName())) {
+        if (userNameExists(user.getUserName())) {
             throw new DataDuplicateException("userName");
         }
         else {
@@ -73,14 +70,10 @@ public class ServerService {
     }
 
     public User updateUser(User user, Integer id) {
-        if (user.getUserId() != null) {
-            throw new UnexpectedParameterException("userId");
-        }
         // Throws an exception if userId does not link to an existing user
         findUser(id);
         user.setUserId(id);
         return usersRepository.save(user);
-
     }
 
     private ListName getToDoListName(Integer listId) {
@@ -137,9 +130,6 @@ public class ServerService {
     }
 
     public ToDoList findSpecificToDoList(User user, Integer listId) {
-        if(user.getUserId() != null) {
-            throw new UnexpectedParameterException("userId");
-        }
         User dbUser = findUser(user.getUserName());
         Integer dbListUserId = jdbcTemplate.queryForObject(
                 "SELECT user_id FROM lists WHERE list_id=:listId",
@@ -174,54 +164,30 @@ public class ServerService {
     }
 
     public ToDoList createToDoList(ToDoList toDoList) {
-        if (toDoList.getListId() != null) {
-            throw new UnexpectedParameterException("listId");
+        findUser(toDoList.getUserId());
+        UserList ul = userListRepository.save(new UserList(null, toDoList.getUserId()));
+        toDoList.setListId(ul.getListId());
+        ListName ln = listNameRepository.save(new ListName(null, toDoList.getLabel()));
+        if (!ln.getListId().equals(toDoList.getListId())) {
+            logger.error("Out of sync creation of list_name list_id='{}' for list list_id='{}'",
+                    ln.getListId(),
+                    toDoList.getListId());
+            logger.info("Deleting list_names entry for list_id='{}' following an out of sync ID error", ln.getListId());
+            listNameRepository.delete(ln);
+            logger.info("Deleting lists entry for list_id='{}' following an out of sync ID error", ul.getListId());
+            userListRepository.delete(ul);
+            throw new OutOfSyncListIdsException("");
         }
-        else {
-            if(!toDoList.getItems().isEmpty()) {
-                for (Item item : toDoList.getItems()) {
-                    if (item.getItemId() != null) {
-                        throw new UnexpectedParameterException("itemId");
-                    }
-                }
+        if (!toDoList.getItems().isEmpty()) {
+            for (Item item : toDoList.getItems()) {
+                Item insertedItem = itemRepository.save(item);
+                insertItemIntoList(toDoList.getListId(), insertedItem.getItemId());
             }
-            findUser(toDoList.getUserId());
-            UserList ul = userListRepository.save(new UserList(null, toDoList.getUserId()));
-            toDoList.setListId(ul.getListId());
-            ListName ln = listNameRepository.save(new ListName(null, toDoList.getLabel()));
-            if (!ln.getListId().equals(toDoList.getListId())) {
-                logger.error("Out of sync creation of list_name list_id='{}' for list list_id='{}'",
-                        ln.getListId(),
-                        toDoList.getListId());
-                logger.info("Deleting list_names entry for list_id='{}' following an out of sync ID error", ln.getListId());
-                listNameRepository.delete(ln);
-                logger.info("Deleting lists entry for list_id='{}' following an out of sync ID error", ul.getListId());
-                userListRepository.delete(ul);
-                throw new OutOfSyncListIdsException("");
-            }
-            if (!toDoList.getItems().isEmpty()) {
-                for (Item item : toDoList.getItems()) {
-                    if (item.getLabel() == null) {
-                        throw new MissingParameterException("items[label]");
-                    }
-                    if (item.isChecked() == null) {
-                        throw new MissingParameterException("items[checked]");
-                    }
-                    Item insertedItem = itemRepository.save(item);
-                    insertItemIntoList(toDoList.getListId(), insertedItem.getItemId());
-                }
-            }
-            return getFilledToDoList(toDoList.getListId());
         }
+        return getFilledToDoList(toDoList.getListId());
     }
 
     public ToDoList updateToDoList(ToDoList toDoList, Integer listId) {
-        if (toDoList.getListId() != null) {
-            throw new UnexpectedParameterException("listId");
-        }
-        if (!toDoList.getItems().isEmpty()) {
-            throw new UnexpectedParameterException("items");
-        }
         if (!userListRepository.existsById(listId)) {
             throw new DataNotFoundException("listId");
         }
@@ -248,9 +214,6 @@ public class ServerService {
     }
 
     public Item updateItem(Item item, Integer itemId) {
-        if (item.getItemId() != null) {
-            throw new UnexpectedParameterException("itemId");
-        }
         if (!itemRepository.existsById(itemId)) {
             throw new DataNotFoundException("itemId");
         }
