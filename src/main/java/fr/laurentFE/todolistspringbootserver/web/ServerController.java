@@ -51,6 +51,11 @@ public class ServerController {
         return serverService.findAllToDoLists(user);
     }
 
+    @GetMapping("/rest/toDoLists/{id}")
+    public ToDoList getToDoList(@RequestBody @Valid User user, @PathVariable Integer id) {
+        return serverService.findSpecificToDoList(user, id);
+    }
+
     @PostMapping("/rest/toDoLists")
     public ToDoList createToDoList(@RequestBody @Valid ToDoList toDoList) {
         return serverService.createToDoList(toDoList);
