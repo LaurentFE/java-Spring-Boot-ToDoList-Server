@@ -8,12 +8,12 @@ Java version 23
 
 ## Usage
 
-Make sure your Java home environment variable set to the Java version 23, as it is the version used to develop 
+Make sure your Java home environment variable is set to the Java version 23, as it is the version used to develop 
 this application.
 
 Maven is not required to package this application, a Maven wrapper is provided.
 
-In your Command Line Interface of your choice, from the root folder of the project, run : 
+In the Command Line Interface of your choice, from the root folder of the project, run : 
 
 ```./mvnw clean package```
 
