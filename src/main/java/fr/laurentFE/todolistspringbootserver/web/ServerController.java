@@ -1,6 +1,7 @@
 package fr.laurentFE.todolistspringbootserver.web;
 
 import fr.laurentFE.todolistspringbootserver.model.Item;
+import fr.laurentFE.todolistspringbootserver.model.RItem;
 import fr.laurentFE.todolistspringbootserver.model.ToDoList;
 import fr.laurentFE.todolistspringbootserver.model.User;
 import fr.laurentFE.todolistspringbootserver.service.ServerService;
@@ -70,7 +71,12 @@ public class ServerController {
     /*
      * Item endpoints
      */
-    @PutMapping("/rest/item/{id}")
+    @PostMapping("/rest/items")
+    public ToDoList createItem(@RequestBody @Valid RItem rItem) {
+        return serverService.createItem(rItem);
+    }
+
+    @PutMapping("/rest/items/{id}")
     public Item updateItem(@RequestBody @Valid Item item, @PathVariable Integer id) {
         return serverService.updateItem(item, id);
     }

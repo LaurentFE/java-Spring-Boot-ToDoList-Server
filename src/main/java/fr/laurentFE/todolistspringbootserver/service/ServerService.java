@@ -204,6 +204,9 @@ public class ServerService {
                     if (item.getLabel() == null) {
                         throw new MissingParameterException("items[label]");
                     }
+                    if (item.isChecked() == null) {
+                        throw new MissingParameterException("items[checked]");
+                    }
                     Item insertedItem = itemRepository.save(item);
                     insertItemIntoList(toDoList.getListId(), insertedItem.getItemId());
                 }
@@ -229,6 +232,19 @@ public class ServerService {
         listNameRepository.save(new ListName(toDoList.getListId(), toDoList.getLabel()));
 
         return getFilledToDoList(listId);
+    }
+
+    public ToDoList createItem(RItem rItem) {
+        if (!userListRepository.existsById(rItem.getListId())) {
+            throw new DataNotFoundException("listId");
+        }
+        Item insertedItem = itemRepository.save(
+                new Item(
+                        rItem.getLabel(),
+                        rItem.isChecked())
+        );
+        insertItemIntoList(rItem.getListId(), insertedItem.getItemId());
+        return getFilledToDoList(rItem.getListId());
     }
 
     public Item updateItem(Item item, Integer itemId) {

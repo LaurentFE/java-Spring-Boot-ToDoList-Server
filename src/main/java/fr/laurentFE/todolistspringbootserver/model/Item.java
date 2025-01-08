@@ -11,17 +11,23 @@ public class Item {
     @Id
     @Column("item_id")
     private Integer itemId;
-    @NotEmpty
+    @NotEmpty(message="This field cannot be empty")
     @Column("label")
     private String label;
-    @NotNull
+    @NotNull(message="This field cannot be empty")
     @Column("is_checked")
-    private boolean checked;
+    private Boolean checked;
 
     public Item() {
         itemId = null;
         label = null;
-        checked = false;
+        checked = null;
+    }
+
+    public Item(String label, boolean checked) {
+        itemId = null;
+        this.label = label;
+        this.checked = checked;
     }
 
     public Integer getItemId() {
@@ -40,11 +46,11 @@ public class Item {
         this.label = label;
     }
 
-    public boolean isChecked() {
+    public Boolean isChecked() {
         return checked;
     }
 
-    public void setChecked(boolean checked) {
+    public void setChecked(Boolean checked) {
         this.checked = checked;
     }
 }
