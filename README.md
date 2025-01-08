@@ -26,7 +26,7 @@ The webserver will run on the machine, and you will be able to send requests to 
 
 The resources handled by the API will be described on the landing page of the server (Not implemented yet)
 
-Upon start of the application, the database is currently always reset to default values.
+Upon start of the application, the database is currently always reset to its empty state.
 
 ## What
 
