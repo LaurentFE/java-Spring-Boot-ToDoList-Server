@@ -230,4 +230,15 @@ public class ServerService {
 
         return getFilledToDoList(listId);
     }
+
+    public Item updateItem(Item item, Integer itemId) {
+        if (item.getItemId() != null) {
+            throw new UnexpectedParameterException("itemId");
+        }
+        if (!itemRepository.existsById(itemId)) {
+            throw new DataNotFoundException("itemId");
+        }
+        item.setItemId(itemId);
+        return itemRepository.save(item);
+    }
 }

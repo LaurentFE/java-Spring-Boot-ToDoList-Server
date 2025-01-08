@@ -1,6 +1,7 @@
 package fr.laurentFE.todolistspringbootserver.model;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -13,7 +14,7 @@ public class Item {
     @NotEmpty
     @Column("label")
     private String label;
-    @NotEmpty
+    @NotNull
     @Column("is_checked")
     private boolean checked;
 
