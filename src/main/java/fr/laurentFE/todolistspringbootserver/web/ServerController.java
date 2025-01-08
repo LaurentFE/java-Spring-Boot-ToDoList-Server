@@ -47,7 +47,7 @@ public class ServerController {
         return serverService.createUser(user);
     }
 
-    @PutMapping("/rest/users/{id}")
+    @PatchMapping("/rest/users/{id}")
     public User updateUser(@RequestBody @Valid User user, @PathVariable Integer id) {
         if (user.getUserId() != null) {
             throw new UnexpectedParameterException("userId");
@@ -93,7 +93,7 @@ public class ServerController {
         return serverService.createToDoList(toDoList);
     }
 
-    @PutMapping("/rest/toDoLists/{id}")
+    @PatchMapping("/rest/toDoLists/{id}")
     public ToDoList updateToDoList(@RequestBody @Valid ToDoList toDoList, @PathVariable Integer id) {
         if (toDoList.getListId() != null) {
             throw new UnexpectedParameterException("listId");
@@ -113,7 +113,7 @@ public class ServerController {
         return serverService.createItem(rItem);
     }
 
-    @PutMapping("/rest/items/{id}")
+    @PatchMapping("/rest/items/{id}")
     public Item updateItem(@RequestBody @Valid Item item, @PathVariable Integer id) {
         if (item.getItemId() != null) {
             throw new UnexpectedParameterException("itemId");
