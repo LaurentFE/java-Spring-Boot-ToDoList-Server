@@ -7,6 +7,7 @@ import fr.laurentFE.todolistspringbootserver.model.User;
 import fr.laurentFE.todolistspringbootserver.service.ServerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 /* This class handles the REST APIs */
@@ -36,6 +37,7 @@ public class ServerController {
     }
 
     @PostMapping("/rest/users")
+    @ResponseStatus(code= HttpStatus.CREATED)
     public User createUser(@RequestBody @Valid User user) {
         return serverService.createUser(user);
     }
@@ -59,6 +61,7 @@ public class ServerController {
     }
 
     @PostMapping("/rest/toDoLists")
+    @ResponseStatus(code= HttpStatus.CREATED)
     public ToDoList createToDoList(@RequestBody @Valid ToDoList toDoList) {
         return serverService.createToDoList(toDoList);
     }
@@ -72,6 +75,7 @@ public class ServerController {
      * Item endpoints
      */
     @PostMapping("/rest/items")
+    @ResponseStatus(code= HttpStatus.CREATED)
     public Item createItem(@RequestBody @Valid RItem rItem) {
         return serverService.createItem(rItem);
     }
