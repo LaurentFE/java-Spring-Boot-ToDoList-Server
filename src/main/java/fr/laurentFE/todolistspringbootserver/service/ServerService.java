@@ -61,11 +61,11 @@ public class ServerService {
     }
 
     public User createUser(User user) {
-        if (userNameExists(user.getUserName())) {
-            throw new DataDuplicateException("userName");
-        }
-        else if (user.getUserId() != null) {
+        if (user.getUserId() != null) {
             throw new UnexpectedParameterException("userId");
+        }
+        else if (userNameExists(user.getUserName())) {
+            throw new DataDuplicateException("userName");
         }
         else {
             return usersRepository.save(user);
@@ -213,14 +213,14 @@ public class ServerService {
     }
 
     public ToDoList updateToDoList(ToDoList toDoList, Integer listId) {
-        if (!userListRepository.existsById(listId)) {
-            throw new DataNotFoundException("listId");
-        }
         if (toDoList.getListId() != null) {
             throw new UnexpectedParameterException("listId");
         }
         if (!toDoList.getItems().isEmpty()) {
             throw new UnexpectedParameterException("items");
+        }
+        if (!userListRepository.existsById(listId)) {
+            throw new DataNotFoundException("listId");
         }
         findUser(toDoList.getUserId());
 
