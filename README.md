@@ -34,7 +34,7 @@ This is a Java Spring Boot server that connects to a MySQL Database to store tod
 endpoints to provide the to do lists to a client application.
 
 Client application will be a branch of https://github.com/LaurentFE/Java-ToDoList-Client, that has not yet been 
-developped, the client's current version doesn't use the proper endpoints and request body for this server version.
+developed, the client's current version doesn't use the proper endpoints and request body for this server version.
 
 Currently available endpoints allow :
 - Restitution of all users
@@ -42,6 +42,7 @@ Currently available endpoints allow :
 - Restitution of a user's specific todo list
 - Creation of a user 
 - Creation of a list for a user, with or without items
+- Creation of a list item for a list attached to a user
 - Update of a list name
 - Update of a list item name
 - Update of a list item status (checked/unchecked)
