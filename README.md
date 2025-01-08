@@ -39,9 +39,10 @@ developped, the client's current version doesn't use the proper endpoints and re
 Currently available endpoints allow :
 - Restitution of all users
 - Restitution of all of a user's todo lists
-- Creation of user 
+- Restitution of a user's specific todo list
+- Creation of a user 
 - Creation of a list for a user, with or without items
-- Update off a list name
+- Update of a list name
 
 ## How
 
