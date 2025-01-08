@@ -72,7 +72,7 @@ public class ServerController {
      * Item endpoints
      */
     @PostMapping("/rest/items")
-    public ToDoList createItem(@RequestBody @Valid RItem rItem) {
+    public Item createItem(@RequestBody @Valid RItem rItem) {
         return serverService.createItem(rItem);
     }
 

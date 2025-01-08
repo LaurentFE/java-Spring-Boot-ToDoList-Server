@@ -234,7 +234,7 @@ public class ServerService {
         return getFilledToDoList(listId);
     }
 
-    public ToDoList createItem(RItem rItem) {
+    public Item createItem(RItem rItem) {
         if (!userListRepository.existsById(rItem.getListId())) {
             throw new DataNotFoundException("listId");
         }
@@ -244,7 +244,7 @@ public class ServerService {
                         rItem.isChecked())
         );
         insertItemIntoList(rItem.getListId(), insertedItem.getItemId());
-        return getFilledToDoList(rItem.getListId());
+        return insertedItem;
     }
 
     public Item updateItem(Item item, Integer itemId) {
