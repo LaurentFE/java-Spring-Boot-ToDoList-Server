@@ -43,6 +43,8 @@ Currently available endpoints allow :
 - Creation of a user 
 - Creation of a list for a user, with or without items
 - Update of a list name
+- Update of a list item name
+- Update of a list item status (checked/unchecked)
 
 ## How
 
