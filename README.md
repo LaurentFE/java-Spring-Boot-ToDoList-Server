@@ -47,6 +47,10 @@ Currently available endpoints allow :
 - Update of a list item name
 - Update of a list item status (checked/unchecked)
 
+Tests do neither cover all the code nor all the exceptions that the application can throw, as a full coverage would not 
+mean much for this application that is not intended to have users, and writing tests was simply a mean to learn a new 
+skill, and have a better toolset for my next coding experience. 
+
 ## How
 
 Programmed in Java 23 using IntelliJ IDEA Community Edition, storing data on a MySQL Database. 
@@ -54,3 +58,5 @@ Programmed in Java 23 using IntelliJ IDEA Community Edition, storing data on a M
 Built with Maven, and Spring Boot v3.4.1
 
 Logging through log4j
+
+Tests with JUnit and Mockito
