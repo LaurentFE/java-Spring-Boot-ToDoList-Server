@@ -5,6 +5,7 @@ import fr.laurentFE.todolistspringbootserver.model.RItem;
 import fr.laurentFE.todolistspringbootserver.model.ToDoList;
 import fr.laurentFE.todolistspringbootserver.model.User;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.MissingParameterException;
+import fr.laurentFE.todolistspringbootserver.model.exceptions.OversizedStringProvidedException;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.UnexpectedParameterException;
 import fr.laurentFE.todolistspringbootserver.service.ServerService;
 import jakarta.validation.Valid;
@@ -44,6 +45,9 @@ public class ServerController {
         if (user.getUserId() != null) {
             throw new UnexpectedParameterException("userId");
         }
+        if (user.getUserName().length() > 45) {
+            throw new OversizedStringProvidedException("userName [max:45]");
+        }
         return serverService.createUser(user);
     }
 
@@ -51,6 +55,9 @@ public class ServerController {
     public User updateUser(@RequestBody @Valid User user, @PathVariable Integer id) {
         if (user.getUserId() != null) {
             throw new UnexpectedParameterException("userId");
+        }
+        if (user.getUserName().length() > 45) {
+            throw new OversizedStringProvidedException("userName [max:45]");
         }
         return serverService.updateUser(user, id);
     }
@@ -77,6 +84,9 @@ public class ServerController {
         if (toDoList.getListId() != null) {
             throw new UnexpectedParameterException("listId");
         }
+        if (toDoList.getLabel().length() > 45) {
+            throw new OversizedStringProvidedException("label [max:45]");
+        }
         if(!toDoList.getItems().isEmpty()) {
             for (Item item : toDoList.getItems()) {
                 if (item.getItemId() != null) {
@@ -84,6 +94,9 @@ public class ServerController {
                 }
                 if (item.getLabel() == null) {
                     throw new MissingParameterException("items[label]");
+                }
+                if (item.getLabel().length() > 45) {
+                    throw new OversizedStringProvidedException("items[label] [max:45]");
                 }
                 if (item.isChecked() == null) {
                     throw new MissingParameterException("items[checked]");
@@ -101,6 +114,9 @@ public class ServerController {
         if (!toDoList.getItems().isEmpty()) {
             throw new UnexpectedParameterException("items");
         }
+        if (toDoList.getLabel().length() > 45) {
+            throw new OversizedStringProvidedException("label [max:45]");
+        }
         return serverService.updateToDoList(toDoList, id);
     }
 
@@ -110,6 +126,9 @@ public class ServerController {
     @PostMapping("/rest/items")
     @ResponseStatus(code= HttpStatus.CREATED)
     public Item createItem(@RequestBody @Valid RItem rItem) {
+        if (rItem.getLabel().length() > 45) {
+            throw new OversizedStringProvidedException("label [max: 45]");
+        }
         return serverService.createItem(rItem);
     }
 
@@ -117,6 +136,9 @@ public class ServerController {
     public Item updateItem(@RequestBody @Valid Item item, @PathVariable Integer id) {
         if (item.getItemId() != null) {
             throw new UnexpectedParameterException("itemId");
+        }
+        if (item.getLabel().length() > 45) {
+            throw new OversizedStringProvidedException("label [max: 45]");
         }
         return serverService.updateItem(item, id);
     }
