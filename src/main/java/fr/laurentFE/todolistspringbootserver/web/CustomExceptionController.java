@@ -68,6 +68,13 @@ public class CustomExceptionController {
         return new ResponseEntity<>(new ErrorResponse(status, message.toString()), status);
     }
 
+    @ExceptionHandler(OversizedStringProvidedException.class)
+    public ResponseEntity<ErrorResponse> handleOversizedStringProvidedException(Exception e) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String message = "String parameter is too long : " + e.getMessage();
+        return new ResponseEntity<>(new ErrorResponse(status, message), status);
+    }
+
     @ExceptionHandler(OutOfSyncListIdsException.class)
     public ResponseEntity<ErrorResponse> handleOutOfSyncListIdsException(Exception e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
