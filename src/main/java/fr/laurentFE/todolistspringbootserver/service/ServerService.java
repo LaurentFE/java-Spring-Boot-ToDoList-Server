@@ -55,7 +55,7 @@ public class ServerService {
     public User findUser(String user_name) {
         User user = usersRepository.findByUserName(user_name).orElse(null);
         if (user == null) {
-            throw new DataNotFoundException("userId");
+            throw new DataNotFoundException("userName");
         }
         return user;
     }
