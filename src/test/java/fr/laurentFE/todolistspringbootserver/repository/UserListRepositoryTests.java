@@ -27,7 +27,7 @@ public class UserListRepositoryTests {
     JdbcTemplate jdbcTemplate;
 
     @AfterEach
-    public void setup() {
+    public void tearDown() {
         jdbcTemplate.execute("DELETE FROM `list_names`;");
         jdbcTemplate.execute("DELETE FROM `list_items`;");
         jdbcTemplate.execute("DELETE FROM `items`;");
