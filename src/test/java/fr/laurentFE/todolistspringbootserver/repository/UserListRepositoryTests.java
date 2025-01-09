@@ -4,7 +4,6 @@ import fr.laurentFE.todolistspringbootserver.model.User;
 import fr.laurentFE.todolistspringbootserver.model.UserList;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,18 +12,17 @@ import org.springframework.util.Assert;
 import java.util.List;
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserListRepositoryTests {
 
     @Autowired
-    UserListRepository userListRepository;
+    private UserListRepository userListRepository;
 
     @Autowired
-    UsersRepository usersRepository;
+    private UsersRepository usersRepository;
 
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @AfterEach
     public void setup() {
