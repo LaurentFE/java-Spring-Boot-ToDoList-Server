@@ -73,8 +73,8 @@ public class CustomExceptionController {
         return new ResponseEntity<>(new ErrorResponse(status, message.toString()), status);
     }
 
-    @ExceptionHandler(OversizedStringProvidedException.class)
-    public ResponseEntity<ErrorResponse> handleOversizedStringProvidedException(Exception e) {
+    @ExceptionHandler(OverSizedStringProvidedException.class)
+    public ResponseEntity<ErrorResponse> handleOverSizedStringProvidedException(Exception e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String message = "String parameter is too long : " + e.getMessage();
         return new ResponseEntity<>(new ErrorResponse(status, message), status);
