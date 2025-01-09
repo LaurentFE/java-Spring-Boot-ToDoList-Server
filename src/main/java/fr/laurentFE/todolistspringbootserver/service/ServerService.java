@@ -169,14 +169,16 @@ public class ServerService {
         toDoList.setListId(ul.getListId());
         ListName ln = listNameRepository.save(new ListName(null, toDoList.getLabel()));
         if (!ln.getListId().equals(toDoList.getListId())) {
-            logger.error("Out of sync creation of list_name list_id='{}' for list list_id='{}'",
-                    ln.getListId(),
-                    toDoList.getListId());
             logger.info("Deleting list_names entry for list_id='{}' following an out of sync ID error", ln.getListId());
             listNameRepository.delete(ln);
             logger.info("Deleting lists entry for list_id='{}' following an out of sync ID error", ul.getListId());
             userListRepository.delete(ul);
-            throw new OutOfSyncListIdsException("");
+            throw new OutOfSyncListIdsException(
+                    "Out of sync creation of list_name list_id='"
+                    + ln.getListId()
+                    + "' for list list_id='"
+                    + toDoList.getListId()
+                    + "'");
         }
         if (!toDoList.getItems().isEmpty()) {
             for (Item item : toDoList.getItems()) {
