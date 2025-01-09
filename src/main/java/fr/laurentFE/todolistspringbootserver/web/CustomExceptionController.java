@@ -2,6 +2,9 @@ package fr.laurentFE.todolistspringbootserver.web;
 
 import fr.laurentFE.todolistspringbootserver.model.ErrorResponse;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.*;
+import fr.laurentFE.todolistspringbootserver.service.ServerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 // Unhandled Exceptions are handled by the default /error resource
 @RestControllerAdvice
 public class CustomExceptionController {
+
+    Logger logger = LoggerFactory.getLogger(ServerService.class);
 
     @ExceptionHandler(UnexpectedParameterException.class)
     public ResponseEntity<ErrorResponse> handleUnexpectedParameterException(Exception e) {
@@ -78,6 +83,7 @@ public class CustomExceptionController {
     @ExceptionHandler(OutOfSyncListIdsException.class)
     public ResponseEntity<ErrorResponse> handleOutOfSyncListIdsException(Exception e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        logger.error(e.getMessage());
         String message = "Internal server error";
         return new ResponseEntity<>(new ErrorResponse(status, message), status);
     }
@@ -85,6 +91,7 @@ public class CustomExceptionController {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(Exception e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        logger.debug(e.getMessage());
         String message = "Required request body is missing";
         return new ResponseEntity<>(new ErrorResponse(status, message), status);
     }
