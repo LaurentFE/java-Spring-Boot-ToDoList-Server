@@ -47,6 +47,11 @@ Currently available endpoints allow :
 - Update of a list item name
 - Update of a list item status (checked/unchecked)
 
+DELETE endpoints will not be implemented, as they simply introduce respect of the table's constraints with the many
+foreign keys referenced between tables, introducing "difficulty" only in the sense that deletion of data should be 
+handled in the proper order. Not exactly a lot to learn in this exercise, and this is not exactly a real product that
+will have real users, so the feature will not be missed.
+
 Tests do neither cover all the code nor all the exceptions that the application can throw, as a full coverage would not 
 mean much for this application that is not intended to have users, and writing tests was simply a mean to learn a new 
 skill, and have a better toolset for my next coding experience. 
