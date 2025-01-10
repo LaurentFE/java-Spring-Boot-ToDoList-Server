@@ -1,6 +1,8 @@
 package fr.laurentFE.todolistspringbootserver.web;
 
 
+import fr.laurentFE.todolistspringbootserver.model.Item;
+import fr.laurentFE.todolistspringbootserver.model.ToDoList;
 import fr.laurentFE.todolistspringbootserver.model.User;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.DataDuplicateException;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.DataNotFoundException;
@@ -233,5 +235,143 @@ public class ServerControllerTests {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message")
                         .value("No data was found for requested : userId"));
+    }
+
+    @Test
+    public void ServerController_getToDoLists_returnsListOfToDoList() throws Exception {
+        Item item1 = new Item("Chocolate", true);
+        item1.setItemId(1);
+        Item item2 = new Item("Milk", true);
+        item2.setItemId(2);
+        Item item3 = new Item("Cookies", false);
+        item3.setItemId(3);
+        ArrayList<Item> items = new ArrayList<>();
+        items.add(item1);
+        items.add(item2);
+        items.add(item3);
+        ToDoList list1 = new ToDoList(1, 1, "Groceries", items);
+        ToDoList list2 = new ToDoList(2, 1, "Exercises", new ArrayList<>());
+        ArrayList<ToDoList> toDoLists = new ArrayList<>();
+        toDoLists.add(list1);
+        toDoLists.add(list2);
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .get("/rest/toDoLists")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"Archibald\" }");
+
+        when(serverService.findAllToDoLists(any(User.class)))
+                .thenReturn(toDoLists);
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$.[0].listId").value(1))
+                .andExpect(jsonPath("$.[0].userId").value(1))
+                .andExpect(jsonPath("$.[0].label").value("Groceries"))
+                .andExpect(jsonPath("$.[0].items").isArray())
+                .andExpect(jsonPath("$.[0].items", hasSize(3)))
+                .andExpect(jsonPath("$.[0].items.[0].itemId").value(1))
+                .andExpect(jsonPath("$.[0].items.[0].label").value("Chocolate"))
+                .andExpect(jsonPath("$.[0].items.[0].checked").value(true))
+                .andExpect(jsonPath("$.[0].items.[1].itemId").value(2))
+                .andExpect(jsonPath("$.[0].items.[1].label").value("Milk"))
+                .andExpect(jsonPath("$.[0].items.[1].checked").value(true))
+                .andExpect(jsonPath("$.[0].items.[2].itemId").value(3))
+                .andExpect(jsonPath("$.[0].items.[2].label").value("Cookies"))
+                .andExpect(jsonPath("$.[0].items.[2].checked").value(false))
+                .andExpect(jsonPath("$.[1].listId").value(2))
+                .andExpect(jsonPath("$.[1].userId").value(1))
+                .andExpect(jsonPath("$.[1].label").value("Exercises"))
+                .andExpect(jsonPath("$.[1].items").isArray())
+                .andExpect(jsonPath("$.[1].items", hasSize(0)));
+    }
+
+    @Test
+    public void ServerController_getToDoLists_throwsMethodArgumentNotValidException() throws Exception {
+
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .get("/rest/toDoLists")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}");
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Invalid value 'null' for field 'userName' : This field cannot be empty;"));
+    }
+
+    @Test
+    public void ServerController_getToDoListsById_returnsToDoList() throws Exception {
+        Item item1 = new Item("Chocolate", true);
+        item1.setItemId(1);
+        Item item2 = new Item("Milk", true);
+        item2.setItemId(2);
+        Item item3 = new Item("Cookies", false);
+        item3.setItemId(3);
+        ArrayList<Item> items = new ArrayList<>();
+        items.add(item1);
+        items.add(item2);
+        items.add(item3);
+        ToDoList list = new ToDoList(1, 1, "Groceries", items);
+
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .get("/rest/toDoLists/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"Archibald\" }");
+
+        when(serverService.findSpecificToDoList(any(User.class), eq(1)))
+                .thenReturn(list);
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.listId").value(1))
+                .andExpect(jsonPath("$.userId").value(1))
+                .andExpect(jsonPath("$.label").value("Groceries"))
+                .andExpect(jsonPath("$.items").isArray())
+                .andExpect(jsonPath("$.items", hasSize(3)))
+                .andExpect(jsonPath("$.items.[0].itemId").value(1))
+                .andExpect(jsonPath("$.items.[0].label").value("Chocolate"))
+                .andExpect(jsonPath("$.items.[0].checked").value(true))
+                .andExpect(jsonPath("$.items.[1].itemId").value(2))
+                .andExpect(jsonPath("$.items.[1].label").value("Milk"))
+                .andExpect(jsonPath("$.items.[1].checked").value(true))
+                .andExpect(jsonPath("$.items.[2].itemId").value(3))
+                .andExpect(jsonPath("$.items.[2].label").value("Cookies"))
+                .andExpect(jsonPath("$.items.[2].checked").value(false));
+    }
+
+    @Test
+    public void ServerController_getToDoListsById_throwsUnexpectedParameterException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .get("/rest/toDoLists/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userId\": 1, \"userName\": \"Archibald\" }");
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Unexpected request JSON key : userId"));
+    }
+
+    @Test
+    public void ServerController_getToDoListsById_throwsDataNotFoundException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .get("/rest/toDoLists/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"Archibald\" }");
+
+        when(serverService.findSpecificToDoList(any(User.class), eq(1)))
+                .thenThrow(new DataNotFoundException("(listId, userName)"));
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message")
+                        .value("No data was found for requested : (listId, userName)"));
     }
 }
