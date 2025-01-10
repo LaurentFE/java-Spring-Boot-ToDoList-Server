@@ -127,7 +127,7 @@ public class ServerController {
     @ResponseStatus(code= HttpStatus.CREATED)
     public Item createItem(@RequestBody @Valid RItem rItem) {
         if (rItem.getLabel().length() > 45) {
-            throw new OverSizedStringProvidedException("label [max: 45]");
+            throw new OverSizedStringProvidedException("label [max:45]");
         }
         return serverService.createItem(rItem);
     }

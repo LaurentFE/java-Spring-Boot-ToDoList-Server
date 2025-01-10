@@ -2,11 +2,11 @@ package fr.laurentFE.todolistspringbootserver.web;
 
 
 import fr.laurentFE.todolistspringbootserver.model.Item;
+import fr.laurentFE.todolistspringbootserver.model.RItem;
 import fr.laurentFE.todolistspringbootserver.model.ToDoList;
 import fr.laurentFE.todolistspringbootserver.model.User;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.DataDuplicateException;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.DataNotFoundException;
-import fr.laurentFE.todolistspringbootserver.model.exceptions.OverSizedStringProvidedException;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.UnexpectedParameterException;
 import fr.laurentFE.todolistspringbootserver.service.ServerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -535,8 +535,56 @@ public class ServerControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userId\": 1, \"label\": \"1234567890123456789012345678901234567890123456\"}");
 
-        when(serverService.updateToDoList(any(ToDoList.class), eq(1)))
-                .thenThrow(new OverSizedStringProvidedException("label [max:45]"));
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("String parameter is too long : label [max:45]"));
+    }
+
+    @Test
+    public void ServerController_postItems_returnsCreatedItem() throws Exception {
+        Item createdItem = new Item("Chocolate", false);
+        createdItem.setItemId(1);
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"listId\": 1, \"label\": \"Chocolate\", \"checked\": false }");
+
+        when(serverService.createItem(any(RItem.class)))
+                .thenReturn(createdItem);
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.itemId").value(1))
+                .andExpect(jsonPath("$.label").value("Chocolate"))
+                .andExpect(jsonPath("$.checked").value(false));
+    }
+
+    @Test
+    public void ServerController_postItems_throwsDataNotFoundException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"listId\": 1, \"label\": \"Chocolate\", \"checked\": false }");
+
+        when(serverService.createItem(any(RItem.class)))
+                .thenThrow(new DataNotFoundException("listId"));
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message")
+                        .value("No data was found for requested : listId"));
+    }
+
+    @Test
+    public void ServerController_postItems_throwsOverSizedStringProvidedException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"listId\": 1, \"label\": \"1234567890123456789012345678901234567890123456\", \"checked\": false }");
 
         mvc.perform(builder)
                 .andDo(MockMvcResultHandlers.print())
