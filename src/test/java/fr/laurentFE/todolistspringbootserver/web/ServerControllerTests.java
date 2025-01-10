@@ -6,6 +6,8 @@ import fr.laurentFE.todolistspringbootserver.model.ToDoList;
 import fr.laurentFE.todolistspringbootserver.model.User;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.DataDuplicateException;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.DataNotFoundException;
+import fr.laurentFE.todolistspringbootserver.model.exceptions.OverSizedStringProvidedException;
+import fr.laurentFE.todolistspringbootserver.model.exceptions.UnexpectedParameterException;
 import fr.laurentFE.todolistspringbootserver.service.ServerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -450,5 +452,96 @@ public class ServerControllerTests {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message")
                         .value("Unexpected request JSON key : items[itemId]"));
+    }
+
+    @Test
+    public void ServerController_patchToDoListById_returnsPatchedToDoList() throws Exception {
+        Item item1 = new Item("Chocolate", true);
+        item1.setItemId(1);
+        Item item2 = new Item("Milk", true);
+        item2.setItemId(2);
+        Item item3 = new Item("Cookies", false);
+        item3.setItemId(3);
+        ArrayList<Item> items = new ArrayList<>();
+        items.add(item1);
+        items.add(item2);
+        items.add(item3);
+        ToDoList patchedToDoList = new ToDoList(1, 1, "List of Groceries", items);
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/toDoLists/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userId\": 1, \"label\": \"List of Groceries\"}");
+
+        when(serverService.updateToDoList(any(ToDoList.class), eq(1)))
+                .thenReturn(patchedToDoList);
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.listId").value(1))
+                .andExpect(jsonPath("$.userId").value(1))
+                .andExpect(jsonPath("$.label").value("List of Groceries"))
+                .andExpect(jsonPath("$.items").isArray())
+                .andExpect(jsonPath("$.items", hasSize(3)))
+                .andExpect(jsonPath("$.items.[0].itemId").value(1))
+                .andExpect(jsonPath("$.items.[0].label").value("Chocolate"))
+                .andExpect(jsonPath("$.items.[0].checked").value(true))
+                .andExpect(jsonPath("$.items.[1].itemId").value(2))
+                .andExpect(jsonPath("$.items.[1].label").value("Milk"))
+                .andExpect(jsonPath("$.items.[1].checked").value(true))
+                .andExpect(jsonPath("$.items.[2].itemId").value(3))
+                .andExpect(jsonPath("$.items.[2].label").value("Cookies"))
+                .andExpect(jsonPath("$.items.[2].checked").value(false));
+    }
+
+    @Test
+    public void ServerController_patchToDoListById_throwsDataNotFoundException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/toDoLists/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userId\": 1, \"label\": \"List of Groceries\"}");
+
+        when(serverService.updateToDoList(any(ToDoList.class), eq(1)))
+                .thenThrow(new DataNotFoundException("listId"));
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message")
+                        .value("No data was found for requested : listId"));
+    }
+
+    @Test
+    public void ServerController_patchToDoListById_throwsUnexpectedParameterException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/toDoLists/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userId\": 1, \"label\": \"List of Groceries\", \"items\": []}");
+
+        when(serverService.updateToDoList(any(ToDoList.class), eq(1)))
+                .thenThrow(new UnexpectedParameterException("items"));
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Unexpected request JSON key : items"));
+    }
+
+    @Test
+    public void ServerController_patchToDoListById_throwsOverSizedStringProvidedException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/toDoLists/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userId\": 1, \"label\": \"1234567890123456789012345678901234567890123456\"}");
+
+        when(serverService.updateToDoList(any(ToDoList.class), eq(1)))
+                .thenThrow(new OverSizedStringProvidedException("label [max:45]"));
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("String parameter is too long : label [max:45]"));
     }
 }
