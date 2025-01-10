@@ -169,4 +169,69 @@ public class ServerControllerTests {
                 .andExpect(jsonPath("$.message")
                         .value("An entry already exist for requested : userName"));
     }
+
+    @Test
+    public void ServerController_patchUsersById_returnsPatchedUser() throws Exception {
+        User patchedUser = new User(1, "Balthazar");
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"Balthazar\" }");
+
+        when(serverService.updateUser(any(User.class), eq(1)))
+                .thenReturn(patchedUser);
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userName")
+                        .value("Balthazar"))
+                .andExpect(jsonPath("$.userId")
+                        .value(1));
+    }
+
+    @Test
+    public void ServerController_patchUsersById_throwsUnexpectedParameterException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userId\": 1, \"userName\": \"Balthazar\" }");
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Unexpected request JSON key : userId"));
+    }
+
+    @Test
+    public void ServerController_patchUsersById_throwsOverSizedStringProvidedException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userName\": \"1234567890123456789012345678901234567890123456\" }");
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("String parameter is too long : userName [max:45]"));
+    }
+
+    @Test
+    public void ServerController_patchUsersById_throwsDataDuplicateException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"Archibald\" }");
+
+        when(serverService.updateUser(any(User.class), eq(1)))
+                .thenThrow(new DataNotFoundException("userId"));
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message")
+                        .value("No data was found for requested : userId"));
+    }
 }
