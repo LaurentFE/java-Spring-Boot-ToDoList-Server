@@ -2,6 +2,7 @@ package fr.laurentFE.todolistspringbootserver.web;
 
 
 import fr.laurentFE.todolistspringbootserver.model.User;
+import fr.laurentFE.todolistspringbootserver.model.exceptions.DataDuplicateException;
 import fr.laurentFE.todolistspringbootserver.model.exceptions.DataNotFoundException;
 import fr.laurentFE.todolistspringbootserver.service.ServerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -101,5 +103,70 @@ public class ServerControllerTests {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message")
                         .value("No data was found for requested : userId"));
+    }
+
+    @Test
+    public void ServerController_postUsers_returnsCreatedUser() throws Exception {
+        User savedUser = new User(1, "Archibald");
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"Archibald\" }");
+
+        when(serverService.createUser(any(User.class)))
+                .thenReturn(savedUser);
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.userId")
+                        .value(1))
+                .andExpect(jsonPath("$.userName")
+                        .value("Archibald"));
+    }
+
+    @Test
+    public void ServerController_postUsers_throwsUnexpectedParameterException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userId\": 1, \"userName\": \"Archibald\" }");
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Unexpected request JSON key : userId"));
+    }
+
+    @Test
+    public void ServerController_postUsers_throwsOverSizedStringProvidedException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"1234567890123456789012345678901234567890123456\" }");
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("String parameter is too long : userName [max:45]"));
+    }
+
+    @Test
+    public void ServerController_postUsers_throwsDataDuplicateException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"Archibald\" }");
+
+        when(serverService.createUser(any(User.class)))
+                .thenThrow(new DataDuplicateException("userName"));
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message")
+                        .value("An entry already exist for requested : userName"));
     }
 }
