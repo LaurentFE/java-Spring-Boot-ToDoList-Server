@@ -592,4 +592,69 @@ public class ServerControllerTests {
                 .andExpect(jsonPath("$.message")
                         .value("String parameter is too long : label [max:45]"));
     }
+
+    @Test
+    public void ServerController_patchItemsById_returnsPatchedItem() throws Exception {
+        Item patchedItem = new Item("Chocolate", true);
+        patchedItem.setItemId(1);
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/items/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"label\": \"Chocolate\", \"checked\": true }");
+
+        when(serverService.updateItem(any(Item.class), eq(1)))
+                .thenReturn(patchedItem);
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.itemId").value(1))
+                .andExpect(jsonPath("$.label").value("Chocolate"))
+                .andExpect(jsonPath("$.checked").value(true));
+    }
+
+    @Test
+    public void ServerController_patchItemById_throwsUnexpectedParameterException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/items/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"itemId\": 1, \"label\": \"Chocolate\", \"checked\": true }");
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Unexpected request JSON key : itemId"));
+    }
+
+    @Test
+    public void ServerController_patchItemById_throwsDataNotFoundException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/items/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"label\": \"Chocolate\", \"checked\": true }");
+
+        when(serverService.updateItem(any(Item.class), eq(1)))
+                .thenThrow(new DataNotFoundException("listId"));
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message")
+                        .value("No data was found for requested : listId"));
+    }
+
+    @Test
+    public void ServerController_patchItemById_throwsOverSizedStringProvidedException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/items/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"label\": \"1234567890123456789012345678901234567890123456\", \"checked\": true }");
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("String parameter is too long : label [max:45]"));
+    }
 }

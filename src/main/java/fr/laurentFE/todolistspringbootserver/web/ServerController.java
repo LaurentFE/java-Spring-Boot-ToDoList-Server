@@ -138,7 +138,7 @@ public class ServerController {
             throw new UnexpectedParameterException("itemId");
         }
         if (item.getLabel().length() > 45) {
-            throw new OverSizedStringProvidedException("label [max: 45]");
+            throw new OverSizedStringProvidedException("label [max:45]");
         }
         return serverService.updateItem(item, id);
     }
