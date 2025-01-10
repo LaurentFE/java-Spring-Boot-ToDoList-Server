@@ -56,9 +56,8 @@ public class ServerControllerTests {
         users.add(user1);
         users.add(user2);
         users.add(user3);
-        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(
-                "/rest/users"
-        );
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .get("/rest/users");
 
         when(serverService.findAllUsers())
                 .thenReturn(users);
@@ -79,9 +78,8 @@ public class ServerControllerTests {
     @Test
     public void ServerController_getUsersById_returnsUser() throws Exception {
         User user = new User(1, "Archibald");
-        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(
-                "/rest/users/1"
-        );
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .get("/rest/users/{id}", 1);
 
         when(serverService.findUser(1))
                 .thenReturn(user);
@@ -96,7 +94,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_getUsersById_returnsNotFound() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(
-                "/rest/users/1"
+                "/rest/users/{id}", 1
         );
 
         when(serverService.findUser(1))
@@ -178,7 +176,7 @@ public class ServerControllerTests {
     public void ServerController_patchUsersById_returnsPatchedUser() throws Exception {
         User patchedUser = new User(1, "Balthazar");
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/users/1")
+                .patch("/rest/users/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userName\": \"Balthazar\" }");
 
@@ -197,7 +195,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_patchUsersById_throwsUnexpectedParameterException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/users/1")
+                .patch("/rest/users/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userId\": 1, \"userName\": \"Balthazar\" }");
 
@@ -211,7 +209,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_patchUsersById_throwsOverSizedStringProvidedException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/users/1")
+                .patch("/rest/users/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"userName\": \"1234567890123456789012345678901234567890123456\" }");
 
@@ -225,7 +223,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_patchUsersById_throwsDataDuplicateException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/users/1")
+                .patch("/rest/users/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userName\": \"Archibald\" }");
 
@@ -320,7 +318,7 @@ public class ServerControllerTests {
         ToDoList list = new ToDoList(1, 1, "Groceries", items);
 
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .get("/rest/toDoLists/1")
+                .get("/rest/toDoLists/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userName\": \"Archibald\" }");
 
@@ -349,7 +347,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_getToDoListsById_throwsUnexpectedParameterException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .get("/rest/toDoLists/1")
+                .get("/rest/toDoLists/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userId\": 1, \"userName\": \"Archibald\" }");
 
@@ -363,7 +361,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_getToDoListsById_throwsDataNotFoundException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .get("/rest/toDoLists/1")
+                .get("/rest/toDoLists/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userName\": \"Archibald\" }");
 
@@ -468,7 +466,7 @@ public class ServerControllerTests {
         items.add(item3);
         ToDoList patchedToDoList = new ToDoList(1, 1, "List of Groceries", items);
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/toDoLists/1")
+                .patch("/rest/toDoLists/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userId\": 1, \"label\": \"List of Groceries\"}");
 
@@ -497,7 +495,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_patchToDoListById_throwsDataNotFoundException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/toDoLists/1")
+                .patch("/rest/toDoLists/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userId\": 1, \"label\": \"List of Groceries\"}");
 
@@ -514,7 +512,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_patchToDoListById_throwsUnexpectedParameterException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/toDoLists/1")
+                .patch("/rest/toDoLists/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userId\": 1, \"label\": \"List of Groceries\", \"items\": []}");
 
@@ -531,7 +529,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_patchToDoListById_throwsOverSizedStringProvidedException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/toDoLists/1")
+                .patch("/rest/toDoLists/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userId\": 1, \"label\": \"1234567890123456789012345678901234567890123456\"}");
 
@@ -598,7 +596,7 @@ public class ServerControllerTests {
         Item patchedItem = new Item("Chocolate", true);
         patchedItem.setItemId(1);
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/items/1")
+                .patch("/rest/items/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"label\": \"Chocolate\", \"checked\": true }");
 
@@ -616,7 +614,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_patchItemById_throwsUnexpectedParameterException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/items/1")
+                .patch("/rest/items/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"itemId\": 1, \"label\": \"Chocolate\", \"checked\": true }");
 
@@ -630,7 +628,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_patchItemById_throwsDataNotFoundException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/items/1")
+                .patch("/rest/items/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"label\": \"Chocolate\", \"checked\": true }");
 
@@ -647,7 +645,7 @@ public class ServerControllerTests {
     @Test
     public void ServerController_patchItemById_throwsOverSizedStringProvidedException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .patch("/rest/items/1")
+                .patch("/rest/items/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"label\": \"1234567890123456789012345678901234567890123456\", \"checked\": true }");
 
