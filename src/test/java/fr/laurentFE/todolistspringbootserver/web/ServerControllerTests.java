@@ -374,4 +374,81 @@ public class ServerControllerTests {
                 .andExpect(jsonPath("$.message")
                         .value("No data was found for requested : (listId, userName)"));
     }
+
+    @Test
+    public void ServerController_postToDoLists_returnsSavedToDoList() throws Exception {
+        Item item1 = new Item("Chocolate", true);
+        item1.setItemId(1);
+        Item item2 = new Item("Milk", true);
+        item2.setItemId(2);
+        Item item3 = new Item("Cookies", false);
+        item3.setItemId(3);
+        ArrayList<Item> items = new ArrayList<>();
+        items.add(item1);
+        items.add(item2);
+        items.add(item3);
+        ToDoList savedToDoList = new ToDoList(1, 1, "Groceries", items);
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/toDoLists")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userId\": 1, \"label\": \"Groceries\", \"items\":" +
+                        "[{ \"label\": \"Chocolate\", \"checked\": true}," +
+                        "{ \"label\": \"Milk\", \"checked\": true}," +
+                        "{ \"label\": \"Cookies\", \"checked\": false}]}");
+
+        when(serverService.createToDoList(any(ToDoList.class)))
+                .thenReturn(savedToDoList);
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.listId").value(1))
+                .andExpect(jsonPath("$.userId").value(1))
+                .andExpect(jsonPath("$.label").value("Groceries"))
+                .andExpect(jsonPath("$.items").isArray())
+                .andExpect(jsonPath("$.items", hasSize(3)))
+                .andExpect(jsonPath("$.items.[0].itemId").value(1))
+                .andExpect(jsonPath("$.items.[0].label").value("Chocolate"))
+                .andExpect(jsonPath("$.items.[0].checked").value(true))
+                .andExpect(jsonPath("$.items.[1].itemId").value(2))
+                .andExpect(jsonPath("$.items.[1].label").value("Milk"))
+                .andExpect(jsonPath("$.items.[1].checked").value(true))
+                .andExpect(jsonPath("$.items.[2].itemId").value(3))
+                .andExpect(jsonPath("$.items.[2].label").value("Cookies"))
+                .andExpect(jsonPath("$.items.[2].checked").value(false));
+    }
+
+    @Test
+    public void ServerController_postToDoLists_throwsOverSizedStringProvidedException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/toDoLists")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userId\": 1, \"label\": \"Groceries\", \"items\":" +
+                        "[{ \"label\": \"Chocolate\", \"checked\": true}," +
+                        "{ \"label\": \"1234567890123456789012345678901234567890123456\", \"checked\": true}," +
+                        "{ \"label\": \"Cookies\", \"checked\": false}]}");
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("String parameter is too long : items[label] [max:45]"));
+    }
+
+    @Test
+    public void ServerController_postToDoLists_throwsUnexpectedParameterException() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/toDoLists")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userId\": 1, \"label\": \"Groceries\", \"items\":" +
+                        "[{ \"label\": \"Chocolate\", \"checked\": true}," +
+                        "{ \"itemId\": 1, \"label\": \"Milk\", \"checked\": true}," +
+                        "{ \"label\": \"Cookies\", \"checked\": false}]}");
+
+        mvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Unexpected request JSON key : items[itemId]"));
+    }
 }
