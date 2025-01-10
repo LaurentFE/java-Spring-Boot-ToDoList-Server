@@ -90,7 +90,7 @@ public class ServerController {
         if(!toDoList.getItems().isEmpty()) {
             for (Item item : toDoList.getItems()) {
                 if (item.getItemId() != null) {
-                    throw new UnexpectedParameterException("itemId");
+                    throw new UnexpectedParameterException("items[itemId]");
                 }
                 if (item.getLabel() == null) {
                     throw new MissingParameterException("items[label]");
