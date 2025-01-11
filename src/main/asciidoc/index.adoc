@@ -1,0 +1,39 @@
+= To Do List Server - Java Spring Boot version
+
+Here is the list of the different services that this server can provide, with examples.
+
+== Users endpoints
+
+=== GET /rest/users
+Lists all known users.
+
+include::{snippets}/getUsers/http-request.adoc[]
+
+.response body
+include::{snippets}/getUsers/response-body.adoc[]
+
+.response fields
+include::{snippets}/getUsers/response-fields.adoc[]
+
+=== GET /rest/users/id
+Provides the requested user's data.
+
+include::{snippets}/getUsersId/http-request.adoc[]
+
+.response body
+include::{snippets}/getUsersId/response-body.adoc[]
+
+.response fields
+include::{snippets}/getUsersId/response-fields.adoc[]
+
+===== POST /rest/users
+Create a new user, given a userName.
+
+.request body
+include::{snippets}/postUsers/request-body.adoc[]
+
+.response body
+include::{snippets}/postUsers/response-body.adoc[]
+
+.response fields
+include::{snippets}/postUsers/response-fields.adoc[]
