@@ -24,7 +24,10 @@ command :
 
 The webserver will run on the machine, and you will be able to send requests to the API on this machine.
 
-The resources handled by the API will be described on the landing page of the server (Not implemented yet - So far the HTML documentation is generated in ```./target/generated-docs/index.html``` inside the packaged JAR file)
+The resources handled by the API are described on the landing page of the server. 
+
+The API documentation is also accessible in ```./target/generated-docs/index.html``` or inside the packaged JAR file in
+```BOOT-INF\classes\static\docs\index.html```
 
 Upon start of the application, the database is currently always reset to its empty state.
 
