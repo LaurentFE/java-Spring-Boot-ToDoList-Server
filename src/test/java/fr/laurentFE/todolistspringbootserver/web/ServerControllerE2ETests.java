@@ -55,8 +55,8 @@ public class ServerControllerE2ETests {
     @AfterEach
     public void tearDown() {
         emptyDataBase();
-
     }
+
     private void primeDataBase() {
         jdbcTemplate.execute("INSERT INTO `users` (`user_name`) VALUES (\"Archibald\");");
         jdbcTemplate.execute("INSERT INTO `users` (`user_name`) VALUES (\"Balthazar\");");
@@ -107,7 +107,7 @@ public class ServerControllerE2ETests {
     }
 
     @Test
-    public void ServerController_getUsers_returnsListOfUser() throws Exception {
+    public void ServerControllerE2E_getUsers_returnsListOfUser() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
                 .get("/rest/users");
 
@@ -128,7 +128,7 @@ public class ServerControllerE2ETests {
     }
 
     @Test
-    public void ServerController_getUsersById_returnsUser() throws Exception {
+    public void ServerControllerE2E_getUsersById_returnsUser() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
                 .get("/rest/users/{id}", 1);
 
@@ -146,7 +146,7 @@ public class ServerControllerE2ETests {
     }
 
     @Test
-    public void ServerController_postUsers_returnsCreatedUser() throws Exception {
+    public void ServerControllerE2E_postUsers_returnsCreatedUser() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
                 .post("/rest/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -166,7 +166,7 @@ public class ServerControllerE2ETests {
     }
 
     @Test
-    public void ServerController_patchUsersById_returnsPatchedUser() throws Exception {
+    public void ServerControllerE2E_patchUsersById_returnsPatchedUser() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
                 .patch("/rest/users/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -187,4 +187,6 @@ public class ServerControllerE2ETests {
                                 fieldWithPath("userName").description("The user's name"))
                 ));
     }
+
+
 }
