@@ -1,6 +1,5 @@
 package fr.laurentFE.todolistspringbootserver.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
@@ -20,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -118,9 +118,12 @@ public class ServerControllerE2ETests {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$.[?(@.userId == 1 && @.userName == \"Archibald\")]").exists())
                 .andExpect(jsonPath("$.[?(@.userId == 2 && @.userName == \"Balthazar\")]").exists())
-                .andDo(document("getUsers", responseFields(
-                        fieldWithPath("[].userId").description("The user's id"),
-                        fieldWithPath("[].userName").description("The user's name")
+                .andDo(document("getUsers",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("[].userId").description("The user's id"),
+                                fieldWithPath("[].userName").description("The user's name")
                 )));
     }
 
@@ -133,31 +136,55 @@ public class ServerControllerE2ETests {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[?(@.userId == 1 && @.userName == \"Archibald\")]").exists())
-                .andDo(document("getUsersId", responseFields(
-                        fieldWithPath("userId").description("The user's id"),
-                        fieldWithPath("userName").description("The user's name")
+                .andDo(document("getUsersId",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("userId").description("The user's id"),
+                                fieldWithPath("userName").description("The user's name")
                 )));
     }
 
     @Test
     public void ServerController_postUsers_returnsCreatedUser() throws Exception {
-        String jsonResponseBody = "{ \"userName\": \"Cornelius\" }";
-        ObjectMapper objectMapper = new ObjectMapper();
-        Object jsonObject = objectMapper.readValue(jsonResponseBody, Object.class);
-        String prettyJsonResponseBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
                 .post("/rest/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(prettyJsonResponseBody);
+                .content("{ \"userName\": \"Cornelius\" }");
 
         mockMvc.perform(builder)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.[?(@.userName == \"Cornelius\")]").exists())
-                .andDo(document("postUsers", responseFields(
-                        fieldWithPath("userId").description("The user's id"),
-                        fieldWithPath("userName").description("The user's name")
+                .andDo(document("postUsers",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("userId").description("The user's id"),
+                                fieldWithPath("userName").description("The user's name")
                 )));
     }
 
+    @Test
+    public void ServerController_patchUsersById_returnsPatchedUser() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/users/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"Demetrius\" }");
+
+        mockMvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userName")
+                        .value("Demetrius"))
+                .andExpect(jsonPath("$.userId")
+                        .value(1))
+                .andDo(document("patchUsers",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("userId").description("The user's id"),
+                                fieldWithPath("userName").description("The user's name"))
+                ));
+    }
 }
