@@ -237,4 +237,41 @@ public class ServerControllerE2ETests {
                                 fieldWithPath("[].items[].checked").description("The item's state (checked/unchecked")
                 )));
     }
+
+    @Test
+    public void ServerControllerE2E_getToDoListsById_returnsListOfToDoList() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .get("/rest/toDoLists/{id}", 2)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"Archibald\" }");
+
+        mockMvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.listId == 2 " +
+                        "&& @.userId == 1 " +
+                        "&& @.label == \"Exercises\" " +
+                        "&& @.items.[?(@.itemId == 4 " +
+                        "&& @.label == \"10 Sit ups\" " +
+                        "&& @.checked == true )] " +
+                        "&& @.items.[?(@.itemId == 5 " +
+                        "&& @.label == \"10 Push ups\" " +
+                        "&& @.checked == false )] " +
+                        "&& @.items.[?(@.itemId == 6 " +
+                        "&& @.label == \"10 Pull ups\" " +
+                        "&& @.checked == false )] " +
+                        ")]").exists())
+                .andDo(document("getToDoListsId",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("listId").description("The todo list's id"),
+                                fieldWithPath("userId").description("The todo list's owner's userId"),
+                                fieldWithPath("label").description("The todo list's label"),
+                                fieldWithPath("items").description("The list of the todo list's items"),
+                                fieldWithPath("items[].itemId").description("The item's id"),
+                                fieldWithPath("items[].label").description("The item's items"),
+                                fieldWithPath("items[].checked").description("The item's state (checked/unchecked")
+                        )));
+    }
 }

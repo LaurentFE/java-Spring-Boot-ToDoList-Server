@@ -5,7 +5,7 @@
 === GET /rest/users
 Lists all known users.
 
-.response body
+.response body of the request GET /rest/users
 include::{snippets}/getUsers/response-body.adoc[]
 
 .response fields
@@ -14,7 +14,7 @@ include::{snippets}/getUsers/response-fields.adoc[]
 === GET /rest/users/\{userId}
 Provides the requested user's data.
 
-.response body
+.response body of the request GET /rest/users/1
 include::{snippets}/getUsersId/response-body.adoc[]
 
 .response fields
@@ -23,7 +23,7 @@ include::{snippets}/getUsersId/response-fields.adoc[]
 === POST /rest/users
 Create a new user, given a userName.
 
-.request body
+.request body of the request POST /rest/users
 include::{snippets}/postUsers/request-body.adoc[]
 
 .response body
@@ -35,7 +35,7 @@ include::{snippets}/postUsers/response-fields.adoc[]
 === PATCH /rest/users/\{userId}
 Updates userId's userName.
 
-.request body
+.request body of the request PATCH /rest/users/1
 include::{snippets}/patchUsers/request-body.adoc[]
 
 .response body
@@ -49,7 +49,7 @@ include::{snippets}/patchUsers/response-fields.adoc[]
 === GET /rest/toDoLists
 Provides the list of todo lists for a given userName
 
-.request body
+.request body of the request GET /rest/toDoLists
 include::{snippets}/getToDoLists/request-body.adoc[]
 
 .response body
@@ -57,3 +57,15 @@ include::{snippets}/getToDoLists/response-body.adoc[]
 
 .response fields
 include::{snippets}/getToDoLists/response-fields.adoc[]
+
+=== GET /rest/toDoLists/\{listId}
+Provides the requested todo list for a given userName
+
+.request body of the request GET /rest/toDoLists/2
+include::{snippets}/getToDoListsId/request-body.adoc[]
+
+.response body
+include::{snippets}/getToDoListsId/response-body.adoc[]
+
+.response fields
+include::{snippets}/getToDoListsId/response-fields.adoc[]
