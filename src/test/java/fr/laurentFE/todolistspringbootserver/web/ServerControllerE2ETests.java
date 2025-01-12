@@ -274,4 +274,44 @@ public class ServerControllerE2ETests {
                                 fieldWithPath("items[].checked").description("The item's state (checked/unchecked")
                         )));
     }
+
+    @Test
+    public void ServerControllerE2E_postToDoLists_returnsSavedToDoList() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/toDoLists")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userId\": 2, \"label\": \"Groceries\", \"items\":" +
+                        "[{ \"label\": \"Chocolate\", \"checked\": true}," +
+                        "{ \"label\": \"Milk\", \"checked\": true}," +
+                        "{ \"label\": \"Cookies\", \"checked\": false}]}");
+
+        mockMvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.[?(@.listId == 4 " +
+                        "&& @.userId == 2 " +
+                        "&& @.label == \"Groceries\" " +
+                        "&& @.items.[?(@.itemId == 10 " +
+                        "&& @.label == \"Chocolate\" " +
+                        "&& @.checked == true )] " +
+                        "&& @.items.[?(@.itemId == 11 " +
+                        "&& @.label == \"Milk\" " +
+                        "&& @.checked == true )] " +
+                        "&& @.items.[?(@.itemId == 12 " +
+                        "&& @.label == \"Cookies\" " +
+                        "&& @.checked == false )] " +
+                        ")]").exists())
+                .andDo(document("postToDoLists",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("listId").description("The todo list's id"),
+                                fieldWithPath("userId").description("The todo list's owner's userId"),
+                                fieldWithPath("label").description("The todo list's label"),
+                                fieldWithPath("items").description("The list of the todo list's items"),
+                                fieldWithPath("items[].itemId").description("The item's id"),
+                                fieldWithPath("items[].label").description("The item's items"),
+                                fieldWithPath("items[].checked").description("The item's state (checked/unchecked")
+                        )));
+    }
 }

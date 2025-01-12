@@ -69,3 +69,14 @@ include::{snippets}/getToDoListsId/response-body.adoc[]
 
 .response fields
 include::{snippets}/getToDoListsId/response-fields.adoc[]
+
+=== POST /rest/toDoLists
+
+.request body of the request POST /rest/toDoLists
+include::{snippets}/postToDoLists/request-body.adoc[]
+
+.response body
+include::{snippets}/postToDoLists/response-body.adoc[]
+
+.response fields
+include::{snippets}/postToDoLists/response-fields.adoc[]
