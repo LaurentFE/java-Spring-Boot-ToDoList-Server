@@ -93,3 +93,16 @@ include::{snippets}/patchToDoLists/response-body.adoc[]
 
 .response fields
 include::{snippets}/patchToDoLists/response-fields.adoc[]
+
+== Items endpoints
+
+=== POST /rest/items
+Creates a new item for a specific todo list.
+.request body of the request POST /rest/items
+include::{snippets}/postItems/request-body.adoc[]
+
+.response body
+include::{snippets}/postItems/response-body.adoc[]
+
+.response fields
+include::{snippets}/postItems/response-fields.adoc[]

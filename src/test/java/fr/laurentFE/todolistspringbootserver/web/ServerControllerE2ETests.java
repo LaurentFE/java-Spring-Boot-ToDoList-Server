@@ -234,7 +234,7 @@ public class ServerControllerE2ETests {
                                 fieldWithPath("[].items").description("The list of the todo list's items"),
                                 fieldWithPath("[].items[].itemId").description("The item's id"),
                                 fieldWithPath("[].items[].label").description("The item's items"),
-                                fieldWithPath("[].items[].checked").description("The item's state (checked/unchecked")
+                                fieldWithPath("[].items[].checked").description("The item's state (checked/unchecked)")
                 )));
     }
 
@@ -271,7 +271,7 @@ public class ServerControllerE2ETests {
                                 fieldWithPath("items").description("The list of the todo list's items"),
                                 fieldWithPath("items[].itemId").description("The item's id"),
                                 fieldWithPath("items[].label").description("The item's items"),
-                                fieldWithPath("items[].checked").description("The item's state (checked/unchecked")
+                                fieldWithPath("items[].checked").description("The item's state (checked/unchecked)")
                         )));
     }
 
@@ -311,7 +311,7 @@ public class ServerControllerE2ETests {
                                 fieldWithPath("items").description("The list of the todo list's items"),
                                 fieldWithPath("items[].itemId").description("The item's id"),
                                 fieldWithPath("items[].label").description("The item's items"),
-                                fieldWithPath("items[].checked").description("The item's state (checked/unchecked")
+                                fieldWithPath("items[].checked").description("The item's state (checked/unchecked)")
                         )));
     }
 
@@ -348,7 +348,30 @@ public class ServerControllerE2ETests {
                                 fieldWithPath("items").description("The list of the todo list's items"),
                                 fieldWithPath("items[].itemId").description("The item's id"),
                                 fieldWithPath("items[].label").description("The item's items"),
-                                fieldWithPath("items[].checked").description("The item's state (checked/unchecked")
+                                fieldWithPath("items[].checked").description("The item's state (checked/unchecked)")
+                        )));
+    }
+
+    @Test
+    public void ServerControllerE2E_postItems_returnsCreatedItem() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post("/rest/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"listId\": 1, \"label\": \"Chocolate\", \"checked\": false }");
+
+        mockMvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.itemId").value(10))
+                .andExpect(jsonPath("$.label").value("Chocolate"))
+                .andExpect(jsonPath("$.checked").value(false))
+                .andDo(document("postItems",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("itemId").description("The item's id"),
+                                fieldWithPath("label").description("The item's items"),
+                                fieldWithPath("checked").description("The item's state (checked/unchecked)")
                         )));
     }
 }
