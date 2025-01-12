@@ -17,8 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -117,6 +116,8 @@ public class ServerControllerE2ETests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$.[?(@.userId == 1 && @.userName == \"Archibald\")]").exists())
+                .andExpect(jsonPath("$.[?(@.userId == 2 && @.userName == \"Balthazar\")]").exists())
                 .andDo(document("getUsers", responseFields(
                         fieldWithPath("[].userId").description("The user's id"),
                         fieldWithPath("[].userName").description("The user's name")
@@ -131,6 +132,7 @@ public class ServerControllerE2ETests {
         mockMvc.perform(builder)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.userId == 1 && @.userName == \"Archibald\")]").exists())
                 .andDo(document("getUsersId", responseFields(
                         fieldWithPath("userId").description("The user's id"),
                         fieldWithPath("userName").description("The user's name")
@@ -151,6 +153,7 @@ public class ServerControllerE2ETests {
         mockMvc.perform(builder)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.[?(@.userName == \"Cornelius\")]").exists())
                 .andDo(document("postUsers", responseFields(
                         fieldWithPath("userId").description("The user's id"),
                         fieldWithPath("userName").description("The user's name")
