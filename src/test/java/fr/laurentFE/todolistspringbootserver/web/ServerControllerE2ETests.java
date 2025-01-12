@@ -20,8 +20,7 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -159,6 +158,9 @@ public class ServerControllerE2ETests {
                 .andDo(document("postUsers",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("userName").description("The user's name (max length:45)")
+                        ),
                         responseFields(
                                 fieldWithPath("userId").description("The user's id"),
                                 fieldWithPath("userName").description("The user's name")
@@ -182,6 +184,9 @@ public class ServerControllerE2ETests {
                 .andDo(document("patchUsers",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("userName").description("The user's new name (max length:45)")
+                        ),
                         responseFields(
                                 fieldWithPath("userId").description("The user's id"),
                                 fieldWithPath("userName").description("The user's name"))
@@ -227,13 +232,16 @@ public class ServerControllerE2ETests {
                 .andDo(document("getToDoLists",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("userName").description("The user's name (max length:45)")
+                        ),
                         responseFields(
                                 fieldWithPath("[].listId").description("The todo list's id"),
                                 fieldWithPath("[].userId").description("The todo list's owner's userId"),
                                 fieldWithPath("[].label").description("The todo list's label"),
                                 fieldWithPath("[].items").description("The list of the todo list's items"),
                                 fieldWithPath("[].items[].itemId").description("The item's id"),
-                                fieldWithPath("[].items[].label").description("The item's items"),
+                                fieldWithPath("[].items[].label").description("The item's label"),
                                 fieldWithPath("[].items[].checked").description("The item's state (checked/unchecked)")
                 )));
     }
@@ -264,13 +272,16 @@ public class ServerControllerE2ETests {
                 .andDo(document("getToDoListsId",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("userName").description("The user's name (max length:45)")
+                        ),
                         responseFields(
                                 fieldWithPath("listId").description("The todo list's id"),
                                 fieldWithPath("userId").description("The todo list's owner's userId"),
                                 fieldWithPath("label").description("The todo list's label"),
                                 fieldWithPath("items").description("The list of the todo list's items"),
                                 fieldWithPath("items[].itemId").description("The item's id"),
-                                fieldWithPath("items[].label").description("The item's items"),
+                                fieldWithPath("items[].label").description("The item's label"),
                                 fieldWithPath("items[].checked").description("The item's state (checked/unchecked)")
                         )));
     }
@@ -304,13 +315,20 @@ public class ServerControllerE2ETests {
                 .andDo(document("postToDoLists",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("userId").description("The todo list's owner's userId"),
+                                fieldWithPath("label").description("The todo list's label (max length:45)"),
+                                fieldWithPath("items").description("The list of the todo list's items"),
+                                fieldWithPath("items[].label").description("The item's label (max length:45)"),
+                                fieldWithPath("items[].checked").description("The item's state (checked/unchecked)")
+                        ),
                         responseFields(
                                 fieldWithPath("listId").description("The todo list's id"),
                                 fieldWithPath("userId").description("The todo list's owner's userId"),
                                 fieldWithPath("label").description("The todo list's label"),
                                 fieldWithPath("items").description("The list of the todo list's items"),
                                 fieldWithPath("items[].itemId").description("The item's id"),
-                                fieldWithPath("items[].label").description("The item's items"),
+                                fieldWithPath("items[].label").description("The item's label"),
                                 fieldWithPath("items[].checked").description("The item's state (checked/unchecked)")
                         )));
     }
@@ -341,13 +359,17 @@ public class ServerControllerE2ETests {
                 .andDo(document("patchToDoLists",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("userId").description("The todo list's owner's userId"),
+                                fieldWithPath("label").description("The todo list's new label (max length:45)")
+                        ),
                         responseFields(
                                 fieldWithPath("listId").description("The todo list's id"),
                                 fieldWithPath("userId").description("The todo list's owner's userId"),
                                 fieldWithPath("label").description("The todo list's label"),
                                 fieldWithPath("items").description("The list of the todo list's items"),
                                 fieldWithPath("items[].itemId").description("The item's id"),
-                                fieldWithPath("items[].label").description("The item's items"),
+                                fieldWithPath("items[].label").description("The item's label"),
                                 fieldWithPath("items[].checked").description("The item's state (checked/unchecked)")
                         )));
     }
@@ -368,9 +390,41 @@ public class ServerControllerE2ETests {
                 .andDo(document("postItems",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("listId").description("The list id to which this item is attached"),
+                                fieldWithPath("label").description("The item's label (max length:45)"),
+                                fieldWithPath("checked").description("The item's state (checked/unchecked)")
+                        ),
                         responseFields(
                                 fieldWithPath("itemId").description("The item's id"),
-                                fieldWithPath("label").description("The item's items"),
+                                fieldWithPath("label").description("The item's label"),
+                                fieldWithPath("checked").description("The item's state (checked/unchecked)")
+                        )));
+    }
+
+    @Test
+    public void ServerControllerE2E_patchItems_returnsPatchedItem() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .patch("/rest/items/{id}", 3)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"label\": \"Cookies\", \"checked\": true }");
+
+        mockMvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.itemId").value(3))
+                .andExpect(jsonPath("$.label").value("Cookies"))
+                .andExpect(jsonPath("$.checked").value(true))
+                .andDo(document("patchItems",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("label").description("The item's new label (max length:45)"),
+                                fieldWithPath("checked").description("The item's new state (checked/unchecked)")
+                        ),
+                        responseFields(
+                                fieldWithPath("itemId").description("The item's id"),
+                                fieldWithPath("label").description("The item's label"),
                                 fieldWithPath("checked").description("The item's state (checked/unchecked)")
                         )));
     }

@@ -9,7 +9,10 @@ Lists all known users.
 include::{snippets}/getUsers/response-body.adoc[]
 
 .response fields
+[%collapsible]
+====
 include::{snippets}/getUsers/response-fields.adoc[]
+====
 
 === GET /rest/users/\{userId}
 Provides the requested user's data.
@@ -18,7 +21,10 @@ Provides the requested user's data.
 include::{snippets}/getUsersId/response-body.adoc[]
 
 .response fields
+[%collapsible]
+====
 include::{snippets}/getUsersId/response-fields.adoc[]
+====
 
 === POST /rest/users
 Create a new user, given a userName.
@@ -26,23 +32,41 @@ Create a new user, given a userName.
 .request body of the request POST /rest/users
 include::{snippets}/postUsers/request-body.adoc[]
 
+.request fields
+[%collapsible]
+====
+include::{snippets}/postUsers/request-fields.adoc[]
+====
+
 .response body
 include::{snippets}/postUsers/response-body.adoc[]
 
 .response fields
+[%collapsible]
+====
 include::{snippets}/postUsers/response-fields.adoc[]
+====
 
 === PATCH /rest/users/\{userId}
-Updates userId's userName.
+Updates an existing userId's userName.
 
 .request body of the request PATCH /rest/users/1
 include::{snippets}/patchUsers/request-body.adoc[]
+
+.request fields
+[%collapsible]
+====
+include::{snippets}/patchUsers/request-fields.adoc[]
+====
 
 .response body
 include::{snippets}/patchUsers/response-body.adoc[]
 
 .response fields
+[%collapsible]
+====
 include::{snippets}/patchUsers/response-fields.adoc[]
+====
 
 == ToDoLists endpoints
 
@@ -52,11 +76,20 @@ Provides the list of todo lists for a given userName
 .request body of the request GET /rest/toDoLists
 include::{snippets}/getToDoLists/request-body.adoc[]
 
+.request fields
+[%collapsible]
+====
+include::{snippets}/getToDoLists/request-fields.adoc[]
+====
+
 .response body
 include::{snippets}/getToDoLists/response-body.adoc[]
 
 .response fields
+[%collapsible]
+====
 include::{snippets}/getToDoLists/response-fields.adoc[]
+====
 
 === GET /rest/toDoLists/\{listId}
 Provides the requested todo list for a given userName
@@ -64,11 +97,20 @@ Provides the requested todo list for a given userName
 .request body of the request GET /rest/toDoLists/2
 include::{snippets}/getToDoListsId/request-body.adoc[]
 
+.request fields
+[%collapsible]
+====
+include::{snippets}/getToDoListsId/request-fields.adoc[]
+====
+
 .response body
 include::{snippets}/getToDoListsId/response-body.adoc[]
 
 .response fields
+[%collapsible]
+====
 include::{snippets}/getToDoListsId/response-fields.adoc[]
+====
 
 === POST /rest/toDoLists
 Creates a new todo list for a given userId.
@@ -76,33 +118,82 @@ Creates a new todo list for a given userId.
 .request body of the request POST /rest/toDoLists
 include::{snippets}/postToDoLists/request-body.adoc[]
 
+.request fields
+[%collapsible]
+====
+include::{snippets}/postToDoLists/request-fields.adoc[]
+====
+
 .response body
 include::{snippets}/postToDoLists/response-body.adoc[]
 
 .response fields
+[%collapsible]
+====
 include::{snippets}/postToDoLists/response-fields.adoc[]
+====
 
 === PATCH /rest/toDoLists/\{listId}
-Updates a specific user's specific todo list's label.
+Updates a specific existing user's specific existing todo list's label.
 
 .request body of the request PATCH /rest/toDoLists/1
 include::{snippets}/patchToDoLists/request-body.adoc[]
+
+.request fields
+[%collapsible]
+====
+include::{snippets}/patchToDoLists/request-fields.adoc[]
+====
 
 .response body
 include::{snippets}/patchToDoLists/response-body.adoc[]
 
 .response fields
+[%collapsible]
+====
 include::{snippets}/patchToDoLists/response-fields.adoc[]
+====
 
 == Items endpoints
 
 === POST /rest/items
 Creates a new item for a specific todo list.
+
 .request body of the request POST /rest/items
 include::{snippets}/postItems/request-body.adoc[]
+
+.request fields
+[%collapsible]
+====
+include::{snippets}/postItems/request-fields.adoc[]
+====
 
 .response body
 include::{snippets}/postItems/response-body.adoc[]
 
 .response fields
+[%collapsible]
+====
 include::{snippets}/postItems/response-fields.adoc[]
+====
+
+=== PATCH /rest/items/\{itemId}
+Updates an existing item's data.
+
+.request body of the request POST /rest/items
+include::{snippets}/patchItems/request-body.adoc[]
+
+.request fields
+[%collapsible]
+====
+include::{snippets}/patchItems/request-fields.adoc[]
+====
+
+.response body
+include::{snippets}/patchItems/response-body.adoc[]
+
+.response fields
+[%collapsible]
+====
+include::{snippets}/patchItems/response-fields.adoc[]
+====
