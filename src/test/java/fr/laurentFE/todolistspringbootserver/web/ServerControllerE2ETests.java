@@ -188,5 +188,53 @@ public class ServerControllerE2ETests {
                 ));
     }
 
+    @Test
+    public void ServerControllerE2E_getToDoLists_returnsListOfToDoList() throws Exception {
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .get("/rest/toDoLists")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"userName\": \"Archibald\" }");
 
+        mockMvc.perform(builder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[?(@.listId == 1 " +
+                        "&& @.userId == 1 " +
+                        "&& @.label == \"Groceries\" " +
+                        "&& @.items.[?(@.itemId == 1 " +
+                                    "&& @.label == \"Chocolate\" " +
+                                    "&& @.checked == true )] " +
+                        "&& @.items.[?(@.itemId == 2 " +
+                                    "&& @.label == \"Milk\" " +
+                                    "&& @.checked == true )] " +
+                        "&& @.items.[?(@.itemId == 3 " +
+                                    "&& @.label == \"Cookies\" " +
+                                    "&& @.checked == false )] " +
+                        ")]").exists())
+                .andExpect(jsonPath("$.[?(@.listId == 2 " +
+                        "&& @.userId == 1 " +
+                        "&& @.label == \"Exercises\" " +
+                        "&& @.items.[?(@.itemId == 4 " +
+                                    "&& @.label == \"10 Sit ups\" " +
+                                    "&& @.checked == true )] " +
+                        "&& @.items.[?(@.itemId == 5 " +
+                                    "&& @.label == \"10 Push ups\" " +
+                                    "&& @.checked == false )] " +
+                        "&& @.items.[?(@.itemId == 6 " +
+                                    "&& @.label == \"10 Pull ups\" " +
+                                    "&& @.checked == false )] " +
+                        ")]").exists())
+                .andDo(document("getToDoLists",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        responseFields(
+                                fieldWithPath("[].listId").description("The todo list's id"),
+                                fieldWithPath("[].userId").description("The todo list's owner's userId"),
+                                fieldWithPath("[].label").description("The todo list's label"),
+                                fieldWithPath("[].items").description("The list of the todo list's items"),
+                                fieldWithPath("[].items[].itemId").description("The item's id"),
+                                fieldWithPath("[].items[].label").description("The item's items"),
+                                fieldWithPath("[].items[].checked").description("The item's state (checked/unchecked")
+                )));
+    }
 }

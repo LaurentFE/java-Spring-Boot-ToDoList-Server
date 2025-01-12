@@ -1,6 +1,6 @@
 = To Do List Server - Java Spring Boot version
 
-== [[bookmark-a]] Users endpoints
+== Users endpoints
 
 === GET /rest/users
 Lists all known users.
@@ -43,3 +43,17 @@ include::{snippets}/patchUsers/response-body.adoc[]
 
 .response fields
 include::{snippets}/patchUsers/response-fields.adoc[]
+
+== ToDoLists endpoints
+
+=== GET /rest/toDoLists
+Provides the list of todo lists for a given userName
+
+.request body
+include::{snippets}/getToDoLists/request-body.adoc[]
+
+.response body
+include::{snippets}/getToDoLists/response-body.adoc[]
+
+.response fields
+include::{snippets}/getToDoLists/response-fields.adoc[]
