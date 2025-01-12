@@ -9,6 +9,12 @@ import fr.laurentFE.todolistspringbootserver.model.exceptions.OverSizedStringPro
 import fr.laurentFE.todolistspringbootserver.model.exceptions.UnexpectedParameterException;
 import fr.laurentFE.todolistspringbootserver.service.ServerService;
 import jakarta.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +26,27 @@ public class ServerController {
     @Autowired
     private ServerService serverService;
 
+    Logger logger = LoggerFactory.getLogger(ServerService.class);
+
     @GetMapping("/")
     public String displayDocumentation() {
-        return "list available endpoints and usage";
+        ClassLoader cl = this.getClass().getClassLoader();
+        InputStream inputStream = cl.getResourceAsStream("classpath:/static/docs/index.html");
+        String basicMessage = "Welcome to the Java - Spring Boot - Todo list server. You should find all the API " +
+                "documentation in the folder target/generated-docs/index.html if you built this application from the " +
+                "sources, or in BOOT-INF\\classes\\static\\docs\\index.html inside of the JAR file.";
+        if (inputStream != null) {
+            try {
+                String str = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                inputStream.close();
+                return str;
+            } catch (IOException e) {
+                logger.error("IOException during readAllBytes() from inputStream : classpath:/static/docs/index.html");
+                logger.error(e.getMessage());
+                return basicMessage;
+            }
+        }
+        return basicMessage;
     }
 
 

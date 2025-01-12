@@ -101,8 +101,10 @@ public class ServerControllerE2ETests {
         this.mockMvc.perform(get("/"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("list available endpoints and usage")))
-                .andDo(document("home"));
+                .andExpect(content().string(containsString("Welcome to the Java - Spring Boot - Todo list " +
+                        "server. You should find all the API documentation in the folder " +
+                        "target/generated-docs/index.html if you built this application from the sources, or in " +
+                        "BOOT-INF\\classes\\static\\docs\\index.html inside of the JAR file.")));
     }
 
     @Test
