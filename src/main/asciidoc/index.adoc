@@ -71,6 +71,7 @@ include::{snippets}/getToDoListsId/response-body.adoc[]
 include::{snippets}/getToDoListsId/response-fields.adoc[]
 
 === POST /rest/toDoLists
+Creates a new todo list for a given userId.
 
 .request body of the request POST /rest/toDoLists
 include::{snippets}/postToDoLists/request-body.adoc[]
@@ -80,3 +81,15 @@ include::{snippets}/postToDoLists/response-body.adoc[]
 
 .response fields
 include::{snippets}/postToDoLists/response-fields.adoc[]
+
+=== PATCH /rest/toDoLists/\{listId}
+Updates a specific user's specific todo list's label.
+
+.request body of the request PATCH /rest/toDoLists/1
+include::{snippets}/patchToDoLists/request-body.adoc[]
+
+.response body
+include::{snippets}/patchToDoLists/response-body.adoc[]
+
+.response fields
+include::{snippets}/patchToDoLists/response-fields.adoc[]
