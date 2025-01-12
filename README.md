@@ -11,20 +11,26 @@ Java version 23
 Make sure your Java home environment variable is set to the Java version 23, as it is the version used to develop 
 this application.
 
+### Building the application yourself
+
 Maven is not required to package this application, a Maven wrapper is provided.
 
 In the Command Line Interface of your choice, from the root folder of the project, run : 
 
 ```./mvnw clean package```
 
-Tha JAR application file will be generated in the ```./target``` folder, and you can run it with the following 
+Tha JAR application file will be generated in the ```./target``` folder
+
+### Running the application
+
+Whether you built the JAR file, or you downloaded it directly from this repository, you can run it with the following 
 command :
 
-```java -jar ./target/todolistspringbootserver<version_number>.jar```
+```java -jar {filepath}/todolistspringbootserver<version_number>.jar```
 
 The webserver will run on the machine, and you will be able to send requests to the API on this machine.
 
-The resources handled by the API are described on the landing page of the server. 
+The resources handled by the API are described on the landing page of the server (eg: ```localhost:8080/```). 
 
 The API documentation is also accessible in ```./target/generated-docs/index.html``` or inside the packaged JAR file in
 ```BOOT-INF\classes\static\docs\index.html```
@@ -36,7 +42,7 @@ Upon start of the application, the database is currently always reset to its emp
 This is a Java Spring Boot server that connects to a MySQL Database to store todo lists for users, and expose API 
 endpoints to provide the to do lists to a client application.
 
-Client application will be a branch of https://github.com/LaurentFE/Java-ToDoList-Client, that has not yet been 
+Client application **will** be a branch of https://github.com/LaurentFE/Java-ToDoList-Client, that has _not yet_ been 
 developed, the client's current version doesn't use the proper endpoints and request body for this server version.
 
 Currently available endpoints allow :
@@ -50,7 +56,7 @@ Currently available endpoints allow :
 - Update of a list item name
 - Update of a list item status (checked/unchecked)
 
-DELETE endpoints will not be implemented, as they simply introduce respect of the table's constraints with the many
+DELETE endpoints will **not** be implemented, as they simply introduce respect of the table's constraints with the many
 foreign keys referenced between tables, introducing "difficulty" only in the sense that deletion of data should be 
 handled in the proper order. Not exactly a lot to learn in this exercise, and this is not exactly a real product that
 will have real users, so the feature will not be missed.
@@ -68,3 +74,5 @@ Built with Maven, and Spring Boot v3.4.1
 Logging through log4j
 
 Tests with JUnit and Mockito
+
+Documentation with restDocs and asciiDoctor.
