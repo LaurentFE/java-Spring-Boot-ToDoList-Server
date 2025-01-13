@@ -70,19 +70,10 @@ include::{snippets}/patchUsers/response-fields.adoc[]
 
 == ToDoLists endpoints
 
-=== GET /rest/toDoLists
-Provides the list of todo lists for a given userName
+=== GET /rest/toDoLists?userId=\{userId}
+Provides the list of todo lists for a given userId
 
-.request body of the request GET /rest/toDoLists
-include::{snippets}/getToDoLists/request-body.adoc[]
-
-.request fields
-[%collapsible]
-====
-include::{snippets}/getToDoLists/request-fields.adoc[]
-====
-
-.response body
+.response body of the request /rest/toDoLists?userId=1
 include::{snippets}/getToDoLists/response-body.adoc[]
 
 .response fields
@@ -92,18 +83,9 @@ include::{snippets}/getToDoLists/response-fields.adoc[]
 ====
 
 === GET /rest/toDoLists/\{listId}
-Provides the requested todo list for a given userName
+Provides the requested todo list
 
-.request body of the request GET /rest/toDoLists/2
-include::{snippets}/getToDoListsId/request-body.adoc[]
-
-.request fields
-[%collapsible]
-====
-include::{snippets}/getToDoListsId/request-fields.adoc[]
-====
-
-.response body
+.response body  of the request GET /rest/toDoLists/2
 include::{snippets}/getToDoListsId/response-body.adoc[]
 
 .response fields

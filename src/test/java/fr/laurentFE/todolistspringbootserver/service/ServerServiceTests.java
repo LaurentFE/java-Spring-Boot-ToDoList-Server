@@ -170,13 +170,6 @@ public class ServerServiceTests {
         List<Map<String, Object>> storedListOfItems = new ArrayList<>();
         ToDoList expectedToDoList = new ToDoList(listId, userId, label, new ArrayList<>());
 
-        when(usersRepository.findByUserName(userName))
-                .thenReturn(Optional.of(storedUser));
-        when(jdbcTemplate.queryForObject(
-                any(String.class),
-                any(MapSqlParameterSource.class),
-                any(Class.class)))
-                .thenReturn(listId);
         when(userListRepository.findById(listId))
                 .thenReturn(Optional.of(storedUserList));
         when(listNameRepository.findById(listId))
@@ -186,7 +179,7 @@ public class ServerServiceTests {
                 any(MapSqlParameterSource.class)))
                 .thenReturn(storedListOfItems);
 
-        ToDoList returnedToDoList = serverService.findSpecificToDoList(user, listId);
+        ToDoList returnedToDoList = serverService.findSpecificToDoList(listId);
 
         assertNotNull(returnedToDoList);
         assertEquals(expectedToDoList.getListId(), returnedToDoList.getListId());
@@ -196,32 +189,10 @@ public class ServerServiceTests {
     }
 
     @Test
-    public void ServerService_findSpecificToDoList_throwsDataNotFoundException() {
-        String userName = "Archibald";
-        User user = new User(null, userName);
-        Integer listId = 1;
-        Integer userId = 1;
-        User storedUser = new User(userId, userName);
-
-        when(usersRepository.findByUserName(userName))
-                .thenReturn(Optional.of(storedUser));
-        when(jdbcTemplate.queryForObject(
-                any(String.class),
-                any(MapSqlParameterSource.class),
-                any(Class.class)))
-                .thenReturn(0);
-
-        DataNotFoundException e = assertThrows(
-                DataNotFoundException.class,
-                () -> serverService.findSpecificToDoList(user, listId));
-        assertEquals("(listId, userName)", e.getMessage());
-    }
-
-    @Test
     public void ServerService_findAllToDoLists_returnsToDoListList() {
         String userName = "Archibald";
-        User user = new User(null, userName);
         Integer userId = 1;
+        User user = new User(userId, userName);
         User storedUser = new User(userId, userName);
         UserList storedUserList1 = new UserList(1, userId);
         UserList storedUserList2 = new UserList(2, userId);
@@ -237,7 +208,7 @@ public class ServerServiceTests {
         storedItems.put("item_id", 1);
         storedListOfItems.add(storedItems);
 
-        when(usersRepository.findByUserName(userName))
+        when(usersRepository.findById(userId))
                 .thenReturn(Optional.of(storedUser));
         when(userListRepository.findAllByUserId(storedUser.getUserId()))
                 .thenReturn(Optional.of(userListList));
@@ -256,7 +227,7 @@ public class ServerServiceTests {
         when(itemRepository.findById(1))
                 .thenReturn(Optional.of(storedItem));
 
-        ArrayList<ToDoList> returnedToDoLists = (ArrayList<ToDoList>) serverService.findAllToDoLists(user);
+        ArrayList<ToDoList> returnedToDoLists = (ArrayList<ToDoList>) serverService.findAllToDoLists(user.getUserId());
 
         assertNotNull(returnedToDoLists);
         assertFalse(returnedToDoLists.isEmpty());
