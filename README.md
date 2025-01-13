@@ -42,8 +42,9 @@ Upon start of the application, the database is currently always reset to its emp
 This is a Java Spring Boot server that connects to a MySQL Database to store todo lists for users, and expose API 
 endpoints to provide the to do lists to a client application.
 
-Client application **will** be a branch of https://github.com/LaurentFE/Java-ToDoList-Client, that has _not yet_ been 
-developed, the client's current version doesn't use the proper endpoints and request body for this server version.
+A client application with a GUI is available, making use of this server's API resources. Please user the branch 
+"compatible-with-Spring-Boot-server-version" of the Java-ToDoList-Client repository 
+(https://github.com/LaurentFE/Java-ToDoList-Client/tree/compatible-with-Spring-Boot-server-version).
 
 Currently available endpoints allow :
 - Restitution of all users
