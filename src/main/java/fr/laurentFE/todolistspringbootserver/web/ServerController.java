@@ -90,16 +90,13 @@ public class ServerController {
      * ToDoList endpoints
      */
     @GetMapping("/rest/toDoLists")
-    public Iterable<ToDoList> getToDoLists(@RequestBody @Valid User user) {
-        return serverService.findAllToDoLists(user);
+    public Iterable<ToDoList> getToDoLists(@RequestParam("userId") Integer userId) {
+        return serverService.findAllToDoLists(userId);
     }
 
     @GetMapping("/rest/toDoLists/{id}")
-    public ToDoList getToDoList(@RequestBody @Valid User user, @PathVariable Integer id) {
-        if(user.getUserId() != null) {
-            throw new UnexpectedParameterException("userId");
-        }
-        return serverService.findSpecificToDoList(user, id);
+    public ToDoList getToDoList(@PathVariable Integer id) {
+        return serverService.findSpecificToDoList(id);
     }
 
     @PostMapping("/rest/toDoLists")

@@ -129,21 +129,13 @@ public class ServerService {
         return res;
     }
 
-    public ToDoList findSpecificToDoList(User user, Integer listId) {
-        User dbUser = findUser(user.getUserName());
-        Integer dbListUserId = jdbcTemplate.queryForObject(
-                "SELECT user_id FROM lists WHERE list_id=:listId",
-                new MapSqlParameterSource().addValue("listId", listId),
-                Integer.class);
-        if (!dbUser.getUserId().equals(dbListUserId)) {
-            throw new DataNotFoundException("(listId, userName)");
-        }
+    public ToDoList findSpecificToDoList(Integer listId) {
         return getFilledToDoList(listId);
     }
 
-    public Iterable<ToDoList> findAllToDoLists(User user) {
+    public Iterable<ToDoList> findAllToDoLists(Integer userId) {
         // dbUser cannot be null, as if no user is found from the given userName, an exception is thrown
-        User dbUser = findUser(user.getUserName());
+        User dbUser = findUser(userId);
         ArrayList<ToDoList> tdl = new ArrayList<>();
         Iterable<UserList> userList = userListRepository.findAllByUserId(dbUser.getUserId()).orElse(null);
         if (userList != null) {

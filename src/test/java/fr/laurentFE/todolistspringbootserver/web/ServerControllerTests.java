@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -255,11 +256,10 @@ public class ServerControllerTests {
         toDoLists.add(list1);
         toDoLists.add(list2);
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .get("/rest/toDoLists")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"userName\": \"Archibald\" }");
+                .get("/rest/toDoLists?userId=1")
+                .contentType(MediaType.APPLICATION_JSON);
 
-        when(serverService.findAllToDoLists(any(User.class)))
+        when(serverService.findAllToDoLists(any(Integer.class)))
                 .thenReturn(toDoLists);
 
         mvc.perform(builder)
@@ -299,8 +299,7 @@ public class ServerControllerTests {
         mvc.perform(builder)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message")
-                        .value("Invalid value 'null' for field 'userName' : This field cannot be empty;"));
+                .andExpect(status().reason(containsString("Required parameter 'userId' is not present.")));
     }
 
     @Test
@@ -322,7 +321,7 @@ public class ServerControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userName\": \"Archibald\" }");
 
-        when(serverService.findSpecificToDoList(any(User.class), eq(1)))
+        when(serverService.findSpecificToDoList(eq(1)))
                 .thenReturn(list);
 
         mvc.perform(builder)
@@ -345,27 +344,13 @@ public class ServerControllerTests {
     }
 
     @Test
-    public void ServerController_getToDoListsById_throwsUnexpectedParameterException() throws Exception {
-        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .get("/rest/toDoLists/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"userId\": 1, \"userName\": \"Archibald\" }");
-
-        mvc.perform(builder)
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message")
-                        .value("Unexpected request JSON key : userId"));
-    }
-
-    @Test
     public void ServerController_getToDoListsById_throwsDataNotFoundException() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
                 .get("/rest/toDoLists/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{ \"userName\": \"Archibald\" }");
 
-        when(serverService.findSpecificToDoList(any(User.class), eq(1)))
+        when(serverService.findSpecificToDoList(eq(1)))
                 .thenThrow(new DataNotFoundException("(listId, userName)"));
 
         mvc.perform(builder)

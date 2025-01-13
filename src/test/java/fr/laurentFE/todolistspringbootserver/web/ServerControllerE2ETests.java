@@ -198,9 +198,8 @@ public class ServerControllerE2ETests {
     @Test
     public void ServerControllerE2E_getToDoLists_returnsListOfToDoList() throws Exception {
         final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .get("/rest/toDoLists")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"userName\": \"Archibald\" }");
+                .get("/rest/toDoLists?userId=1")
+                .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(builder)
                 .andDo(MockMvcResultHandlers.print())
@@ -232,11 +231,7 @@ public class ServerControllerE2ETests {
                                     "&& @.checked == false )] " +
                         ")]").exists())
                 .andDo(document("getToDoLists",
-                        preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("userName").description("The user's name (max length:45)")
-                        ),
                         responseFields(
                                 fieldWithPath("[].listId").description("The todo list's id"),
                                 fieldWithPath("[].userId").description("The todo list's owner's userId"),
